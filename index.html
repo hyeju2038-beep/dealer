@@ -930,7 +930,7 @@
       document.getElementById('myChipInfo').innerHTML = `내 칩: <span class="highlight">${p.chips}칩</span>`;
       const minRaiseToBeat = Math.max(5, currentBet - p.betThisRound + 5);
       document.getElementById('callInfo').innerHTML = needToCall > 0
-        ? `Call 하려면 <span class="highlight">${needToCall}칩</span> 필요`
+        ? `Call 하려면 <span class="highlight">${needToCall}칩</span> 필요 · Raise 최소 <span class="highlight">${minRaiseNeeded}칩</span> 필요`
         : `현재 Check 가능 (Call = 통과)`;
 
       renderTableCards();
