@@ -928,9 +928,10 @@
       document.getElementById('turnTitle').textContent = p.name + '님의 선택';
       document.getElementById('potAmount').textContent = pot;
       document.getElementById('myChipInfo').innerHTML = `내 칩: <span class="highlight">${p.chips}칩</span>`;
+      const minRaiseToBeat = Math.max(5, currentBet - p.betThisRound + 5);
       document.getElementById('callInfo').innerHTML = needToCall > 0
-        ? `Call 하려면 <span class="highlight">${needToCall}칩</span> 필요 · 다음 Raise는 <span class="highlight">${lastRaiseAmount + 5}칩 이상</span>`
-        : `참가비 5칩 지불 완료 · 현재 Check 가능 · 다음 Raise는 <span class="highlight">${lastRaiseAmount + 5}칩 이상</span>`;
+        ? `Call 하려면 <span class="highlight">${needToCall}칩</span> 필요`
+        : `현재 Check 가능 (Call = 통과)`;
 
       renderTableCards();
       updateSelectedAmount();
@@ -1029,20 +1030,19 @@
       if (action === 'raise') {
         if (selectedRaiseTotal <= 0) { alert('레이즈 금액을 선택하세요.'); return; }
 
-        // 이전 플레이어가 올린 레이즈 금액보다 더 크게 올려야 함
-        // 예: P1 +10 → P2는 +15 이상, P2 +20 → P1은 +25 이상
-        const minimumRaise = lastRaiseAmount + 5;
-        if (selectedRaiseTotal < minimumRaise) {
-          alert('이전 레이즈보다 더 많이 올려야 합니다. 최소 ' + minimumRaise + '칩 이상 레이즈하세요.');
+        // Raise는 Call 비용을 자동으로 더하지 않음.
+        // 이번에 선택한 칩만 추가로 내고, 그 결과 내 총 베팅액이 현재 최고 베팅액보다 커야 함.
+        const newTotalBet = p.betThisRound + selectedRaiseTotal;
+        if (newTotalBet <= currentBet) {
+          alert('Raise는 현재 최고 베팅액보다 더 많이 걸어야 합니다. 최소 ' + (currentBet - p.betThisRound + 5) + '칩 이상 추가하세요.');
           return;
         }
 
-        const totalPayment = needToCall + selectedRaiseTotal;
-        if (p.chips < totalPayment) { alert('칩이 부족합니다.'); return; }
-        p.chips -= totalPayment;
-        p.betThisRound += totalPayment;
-        pot += totalPayment;
-        currentBet = p.betThisRound;
+        if (p.chips < selectedRaiseTotal) { alert('칩이 부족합니다.'); return; }
+        p.chips -= selectedRaiseTotal;
+        p.betThisRound = newTotalBet;
+        pot += selectedRaiseTotal;
+        currentBet = newTotalBet;
         lastRaiseAmount = selectedRaiseTotal;
         pendingPlayers = players.map((_, i) => i).filter(i => !players[i].folded && i !== currentPlayerIndex);
         goNextTurn();
