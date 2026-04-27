@@ -2,7 +2,7 @@
   "name": "Indian Poker & Blackjack",
   "short_name": "CardGame",
   "description": "인디언포커와 블랙잭을 플레이할 수 있는 카드 게임 앱",
-  "start_url": "./IndianPoker.html",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "background_color": "#111827",
