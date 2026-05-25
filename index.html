@@ -707,7 +707,7 @@
       }
 
       if (winner) {
-        winner.chips += pot; logHtml += `<div style="font-size:18px; color:var(--gold-light); margin-bottom:10px;">🏆 승자: ${winner.name} (+${pot}냥 획득)</div>`;
+        winner.chips += pot; logHtml = `<div style="font-size:18px; color:var(--gold-light); margin-bottom:10px;">🏆 승자: ${winner.name}</div>` + logHtml;
         players.forEach(p => {
           if (p === winner || p.dead) return;
           if (!p.declarationTruth) { 
