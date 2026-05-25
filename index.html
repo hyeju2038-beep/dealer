@@ -718,10 +718,10 @@
           }
         });
         if (!winner.declarationTruth) {
-          logHtml += `<div style="color:var(--red-bright); font-weight:bold; margin-top:8px;">야바위 성공! 거짓 선언 보너스 획득</div>`;
+          logHtml += `<div style="color:var(--red-bright); font-weight:bold; margin-top:8px;">야바위 성공! 거짓 선언 보너스 5냥씩 획득</div>`;
           players.forEach(p => { 
             if (p !== winner && !p.dead) { 
-              let penalty = Math.min(1, p.chips); 
+              let penalty = Math.min(5, p.chips); 
               p.chips -= penalty; winner.chips += penalty; 
             } 
           });
