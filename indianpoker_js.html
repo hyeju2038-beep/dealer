@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>인디언 포-카</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0d0a06;
+      --bg-mid: #1a1208;
+      --wood-dark: #2c1a0a;
+      --wood-mid: #3d2510;
+      --wood-light: #5c3a1e;
+      --wood-highlight: #7a4e28;
+      --gold: #c8941a;
+      --gold-light: #f0c040;
+      --gold-pale: #fae08a;
+      --red: #8b1a1a;
+      --red-bright: #c0392b;
+      --cream: #f5e6c8;
+      --parchment: #e8d4a0;
+      --ink: #1a0f05;
+      --ember: #ff6b1a;
+      --ember-glow: rgba(255,107,26,0.15);
+      --jade: #2d6a4f;
+      --jade-light: #40916c;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 100%; min-height: 100vh;
+      background: var(--bg-dark);
+      font-family: 'Noto Serif KR', serif;
+      overflow-x: hidden;
+    }
+
+    /* ── JOSEON BACKGROUND ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(255,120,30,0.18) 0%, transparent 55%),
+        radial-gradient(ellipse at 20% 80%, rgba(180,80,10,0.10) 0%, transparent 40%),
+        radial-gradient(ellipse at 80% 70%, rgba(140,60,5,0.08) 0%, transparent 35%),
+        linear-gradient(180deg, #0d0a06 0%, #150d05 40%, #1a1208 100%);
+    }
+
+    /* Lattice window pattern overlay */
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image:
+        repeating-linear-gradient(0deg, transparent, transparent 59px, rgba(200,148,26,0.04) 60px),
+        repeating-linear-gradient(90deg, transparent, transparent 59px, rgba(200,148,26,0.04) 60px);
+      background-size: 60px 60px;
+    }
+
+    /* ── HORONGBUL (LANTERN) GLOW ── */
+    .lantern-glow {
+      position: fixed;
+      top: -80px; left: 50%; transform: translateX(-50%);
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(255,140,40,0.25) 0%, rgba(255,100,20,0.10) 40%, transparent 70%);
+      pointer-events: none; z-index: 1;
+      animation: flicker 3s ease-in-out infinite;
+    }
+
+    @keyframes flicker {
+      0%,100% { opacity: 1; transform: translateX(-50%) scale(1); }
+      33% { opacity: 0.85; transform: translateX(-50%) scale(1.05); }
+      66% { opacity: 0.95; transform: translateX(-50%) scale(0.97); }
+    }
+
+    /* ── FALLING PETALS ── */
+    .petal-container {
+      position: fixed; inset: 0; pointer-events: none; z-index: 2; overflow: hidden;
+    }
+
+    .petal {
+      position: absolute;
+      top: -30px;
+      width: 10px; height: 14px;
+      border-radius: 50% 0 50% 0;
+      opacity: 0;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      0%   { opacity: 0; transform: translateX(0) rotate(0deg) scale(0.8); }
+      10%  { opacity: 0.7; }
+      90%  { opacity: 0.5; }
+      100% { opacity: 0; transform: translateX(var(--drift)) translateY(110vh) rotate(var(--spin)) scale(0.6); }
+    }
+
+    /* ── CONTAINER ── */
+    .container {
+      position: relative; z-index: 10;
+      max-width: 680px; margin: 0 auto;
+      padding: 16px 12px 32px;
+      min-height: 100vh;
+    }
+
+    /* ── SCREEN ── */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ── TITLE ── */
+    .game-title {
+      font-family: 'Noto Serif KR', serif;
+      font-size: 44px; font-weight: 900;
+      color: var(--gold-light);
+      text-align: center;
+      letter-spacing: 6px;
+      text-shadow:
+        0 0 30px rgba(240,192,64,0.6),
+        0 0 60px rgba(240,192,64,0.3),
+        2px 4px 0 rgba(0,0,0,0.8),
+        0 2px 0 #7a4000;
+      padding: 20px 0 4px;
+      position: relative;
+    }
+
+    .game-title::before, .game-title::after {
+      content: '◈';
+      color: var(--red);
+      font-size: 18px;
+      vertical-align: middle;
+      margin: 0 12px;
+      text-shadow: 0 0 10px rgba(192,57,43,0.8);
+    }
+
+    .subtitle {
+      text-align: center;
+      color: var(--parchment);
+      font-size: 13px;
+      letter-spacing: 3px;
+      opacity: 0.7;
+      padding-bottom: 12px;
+    }
+
+    /* ── DECORATIVE DIVIDER ── */
+    .divider {
+      text-align: center;
+      color: var(--gold);
+      font-size: 20px;
+      letter-spacing: 8px;
+      opacity: 0.5;
+      margin: 8px 0;
+    }
+
+    /* ── PANEL ── */
+    .panel {
+      background:
+        linear-gradient(135deg, rgba(60,30,10,0.95) 0%, rgba(40,20,8,0.98) 100%);
+      border: 1px solid rgba(200,148,26,0.3);
+      border-radius: 8px;
+      padding: 16px;
+      margin: 10px 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .panel::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    .panel-title {
+      font-size: 13px;
+      color: var(--gold);
+      letter-spacing: 2px;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      color: var(--parchment);
+      font-size: 13px;
+      margin-bottom: 6px;
+      letter-spacing: 1px;
+    }
+
+    select, input[type=text] {
+      width: 100%;
+      background: rgba(20,10,3,0.9);
+      border: 1px solid rgba(200,148,26,0.4);
+      color: var(--cream);
+      padding: 9px 12px;
+      border-radius: 4px;
+      font-family: 'Noto Serif KR', serif;
+      font-size: 14px;
+      outline: none;
+      margin-bottom: 10px;
+    }
+
+    select:focus, input[type=text]:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 8px rgba(200,148,26,0.3);
+    }
+
+    /* ── PLAYER INPUT ROW ── */
+    .player-input-row {
+      display: flex; gap: 6px; align-items: center; margin-bottom: 8px;
+    }
+
+    .player-input-row input { margin-bottom: 0; flex: 1; }
+
+    .load-player-select {
+      width: auto; flex: 0 0 100px; margin-bottom: 0; font-size: 12px; padding: 9px 6px;
+    }
+
+    .saved-chip-pill {
+      flex: 0 0 auto;
+      background: rgba(200,148,26,0.2);
+      border: 1px solid rgba(200,148,26,0.5);
+      color: var(--gold-light);
+      padding: 4px 8px;
+      border-radius: 20px;
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    .saved-chip-pill.empty {
+      background: rgba(80,40,10,0.3);
+      border-color: rgba(100,60,20,0.4);
+      color: rgba(200,160,80,0.4);
+    }
+
+    /* ── BUTTONS ── */
+    .btn-row {
+      display: flex; gap: 10px; justify-content: center;
+      margin: 12px 0;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      font-family: 'Noto Serif KR', serif;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 13px 28px;
+      border: none; border-radius: 4px;
+      cursor: pointer;
+      letter-spacing: 2px;
+      transition: all 0.15s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, transparent 50%);
+    }
+
+    .btn-gold {
+      background: linear-gradient(180deg, #c8941a 0%, #8a5e0a 60%, #6b4508 100%);
+      color: var(--cream);
+      border: 1px solid #c8941a;
+      box-shadow: 0 2px 0 #3d2000, 0 4px 12px rgba(200,148,26,0.3);
+    }
+
+    .btn-gold:hover {
+      background: linear-gradient(180deg, #f0c040 0%, #c8941a 60%, #8a5e0a 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 3px 0 #3d2000, 0 6px 18px rgba(200,148,26,0.5);
+    }
+
+    .btn-gold:active { transform: translateY(1px); box-shadow: 0 1px 0 #3d2000; }
+
+    .btn-ghost {
+      background: rgba(60,30,10,0.7);
+      color: var(--parchment);
+      border: 1px solid rgba(200,148,26,0.4);
+    }
+
+    .btn-ghost:hover { border-color: var(--gold); color: var(--gold-light); }
+
+    .btn-red {
+      background: linear-gradient(180deg, #8b1a1a 0%, #5a0e0e 100%);
+      color: var(--cream);
+      border: 1px solid #8b1a1a;
+      box-shadow: 0 2px 0 #300, 0 4px 12px rgba(139,26,26,0.3);
+    }
+
+    .btn-red:hover {
+      background: linear-gradient(180deg, #c0392b 0%, #8b1a1a 100%);
+      transform: translateY(-1px);
+    }
+
+    /* ── READY SCREEN ── */
+    .ready-box { text-align: center; padding: 32px 20px; }
+    .ready-title { font-size: 26px; color: var(--gold-light); margin-bottom: 12px; letter-spacing: 3px; }
+    .ready-msg { color: var(--parchment); font-size: 15px; margin-bottom: 16px; }
+    .ready-warning {
+      font-size: 12px; color: var(--ember);
+      background: rgba(255,107,26,0.1);
+      border: 1px solid rgba(255,107,26,0.3);
+      padding: 8px 16px; border-radius: 4px;
+      margin-bottom: 20px; letter-spacing: 1px;
+    }
+
+    /* ══════════════════════════════════════════════════
+       POKER TABLE — WOODEN ROUND TABLE
+    ══════════════════════════════════════════════════ */
+    .poker-table-wrap {
+      position: relative;
+      width: 100%;
+      padding-top: 18px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Outer wooden rim */
+    .poker-table-outer {
+      position: relative;
+      width: min(520px, 94vw);
+      height: min(520px, 94vw);
+      margin: 0 auto;
+      border-radius: 50%;
+      background:
+        conic-gradient(
+          from 0deg,
+          #5c3a1e 0deg, #7a4e28 30deg, #4a2c0e 60deg, #6b3d1a 90deg,
+          #8a5530 120deg, #4a2c0e 150deg, #7a4e28 180deg, #5c3a1e 210deg,
+          #6b3d1a 240deg, #8a5530 270deg, #4a2c0e 300deg, #7a4e28 330deg,
+          #5c3a1e 360deg
+        );
+      box-shadow:
+        0 0 0 6px #3d2510,
+        0 0 0 10px #5c3a1e,
+        0 0 0 14px #2c1a0a,
+        0 20px 60px rgba(0,0,0,0.8),
+        0 0 80px rgba(255,120,30,0.12),
+        inset 0 0 40px rgba(0,0,0,0.5);
+    }
+
+    /* Wood grain effect */
+    .poker-table-outer::before {
+      content: '';
+      position: absolute; inset: 0;
+      border-radius: 50%;
+      background:
+        repeating-linear-gradient(
+          15deg,
+          transparent 0px, transparent 8px,
+          rgba(255,255,255,0.015) 8px, rgba(255,255,255,0.015) 10px
+        ),
+        repeating-linear-gradient(
+          -15deg,
+          transparent 0px, transparent 12px,
+          rgba(0,0,0,0.04) 12px, rgba(0,0,0,0.04) 14px
+        );
+    }
+
+    /* Inner felt area */
+    .poker-table-inner {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 68%;
+      height: 68%;
+      border-radius: 50%;
+      background:
+        radial-gradient(ellipse at 40% 35%, #2d6a4f 0%, #1e4a38 50%, #142d22 100%);
+      box-shadow:
+        inset 0 4px 20px rgba(0,0,0,0.6),
+        inset 0 0 40px rgba(0,0,0,0.4),
+        0 0 0 4px rgba(0,0,0,0.4),
+        0 0 20px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .table-label {
+      font-size: 10px; color: rgba(200,220,180,0.5);
+      letter-spacing: 1.5px; text-align: center;
+      padding: 0 10px; line-height: 1.4;
+    }
+
+    .table-cards-ring {
+      display: flex; flex-wrap: wrap;
+      justify-content: center; align-items: center;
+      gap: 6px; padding: 6px;
+    }
+
+    .pot-display {
+      display: flex; align-items: center; gap: 5px;
+      background: rgba(0,0,0,0.35);
+      border: 1px solid rgba(200,148,26,0.3);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 12px; color: var(--gold-light);
+    }
+
+    .pot-icon { font-size: 14px; }
+    .pot-unit { font-size: 11px; color: rgba(200,148,26,0.6); }
+    .pot-amount { font-weight: 700; font-size: 16px; }
+
+    /* ── PLAYER CARD SLOTS around table ring ── */
+    .player-ring-slots {
+      position: absolute; inset: 0;
+      overflow: visible;
+    }
+
+    .player-slot {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: visible;
+      z-index: 10;
+    }
+
+    .player-slot .player-label {
+      font-size: 10px; color: var(--parchment);
+      background: rgba(20,10,3,0.8);
+      padding: 2px 6px; border-radius: 10px;
+      border: 1px solid rgba(200,148,26,0.3);
+      white-space: nowrap;
+      letter-spacing: 0.5px;
+      text-align: center;
+      max-width: 70px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .player-main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+    }
+
+    .player-main .table-card-info {
+      justify-content: center;
+      flex-wrap: wrap;
+      max-width: 90px;
+      min-height: 13px;
+    }
+
+    /* ── PLAYING CARD ── */
+    .playing-card {
+      width: 44px; height: 62px;
+      background: linear-gradient(135deg, #f8f0e0 0%, #ede0c0 100%);
+      border: 2px solid rgba(139,26,26,0.6);
+      border-radius: 5px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Noto Serif KR', serif;
+      font-size: 22px; font-weight: 900;
+      color: var(--red);
+      box-shadow:
+        2px 3px 8px rgba(0,0,0,0.6),
+        inset 0 1px 0 rgba(255,255,255,0.5);
+      position: relative;
+      cursor: default;
+    }
+
+    .playing-card::before {
+      content: '';
+      position: absolute;
+      inset: 3px;
+      border: 1px solid rgba(139,26,26,0.2);
+      border-radius: 2px;
+    }
+
+    .folded-card {
+      background: linear-gradient(135deg, #2a1a0a 0%, #1a0d05 100%) !important;
+      color: rgba(200,148,26,0.5) !important;
+      font-size: 10px !important;
+      border-color: rgba(100,60,20,0.4) !important;
+    }
+
+    .table-card-info {
+      display: flex; gap: 4px;
+      font-size: 9px;
+    }
+
+    .tci-bet {
+      background: rgba(200,148,26,0.2);
+      color: var(--gold-light);
+      padding: 1px 4px; border-radius: 3px;
+    }
+
+    .tci-chips {
+      background: rgba(45,106,79,0.3);
+      color: #74c69d;
+      padding: 1px 4px; border-radius: 3px;
+    }
+
+    .tci-fold {
+      background: rgba(139,26,26,0.3);
+      color: #e07070;
+      padding: 1px 4px; border-radius: 3px;
+    }
+
+    /* ── SAKE CUP (술잔) ── */
+    .sake-cup {
+      width: 28px; height: 28px;
+      cursor: pointer;
+      transition: transform 0.2s;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
+      position: absolute;
+      right: -32px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 11;
+    }
+
+    .sake-cup:hover { transform: scale(1.15); filter: drop-shadow(0 0 6px rgba(255,180,80,0.6)) drop-shadow(0 2px 4px rgba(0,0,0,0.6)); }
+    .sake-cup:active { transform: scale(0.9); }
+    .sake-cup svg { width: 100%; height: 100%; }
+
+    /* Throw animation */
+    @keyframes throwCup {
+      0%   { transform: translate(0,0) rotate(0deg) scale(1); opacity: 1; }
+      50%  { transform: translate(var(--tx), var(--ty)) rotate(180deg) scale(1.3); opacity: 0.9; }
+      80%  { transform: translate(var(--tx2), var(--ty2)) rotate(300deg) scale(0.7); opacity: 0.6; }
+      100% { transform: translate(var(--tx3), var(--ty3)) rotate(360deg) scale(0.3); opacity: 0; }
+    }
+
+    .cup-throwing {
+      animation: throwCup 0.8s ease-in forwards;
+      pointer-events: none;
+    }
+
+    /* Water splash in center */
+    .splash-container {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 20;
+    }
+
+    .splash-drop {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(180,220,255,0.9) 0%, rgba(100,160,220,0.5) 60%, transparent 100%);
+      animation: splashDrop 0.8s ease-out forwards;
+    }
+
+    @keyframes splashDrop {
+      0% { width: 4px; height: 4px; opacity: 1; top: 0; left: 0; }
+      100% { width: 40px; height: 40px; opacity: 0; top: -20px; left: -20px; }
+    }
+
+    .splash-wave {
+      position: absolute;
+      border: 2px solid rgba(150,200,255,0.7);
+      border-radius: 50%;
+      animation: splashWave 1.2s ease-out forwards;
+    }
+
+    @keyframes splashWave {
+      0% { width: 10px; height: 10px; top: -5px; left: -5px; opacity: 0.8; }
+      100% { width: 120px; height: 120px; top: -60px; left: -60px; opacity: 0; }
+    }
+
+    .water-overflow {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(140,200,255,0.3);
+      animation: waterOverflow 1.5s ease-out forwards;
+    }
+
+    @keyframes waterOverflow {
+      0% { width: 20px; height: 20px; top: -10px; left: -10px; opacity: 0.7; }
+      100% { width: 80px; height: 30px; top: 10px; left: -40px; opacity: 0; }
+    }
+
+    /* ── INFO ROW ── */
+    .info-row {
+      display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+    }
+
+    .info-chip {
+      background: rgba(20,10,3,0.8);
+      border: 1px solid rgba(200,148,26,0.3);
+      padding: 8px 14px; border-radius: 4px;
+      color: var(--parchment); font-size: 14px;
+      flex: 1; text-align: center; min-width: 140px;
+    }
+
+    .highlight { color: var(--gold-light); font-weight: 700; }
+
+    /* ── COIN ROW (Joseon currency chips) ── */
+    .coin-row {
+      display: flex; gap: 10px; justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .coin {
+      width: 66px; height: 66px;
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.15s;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .coin:hover { transform: scale(1.1); }
+    .coin:active { transform: scale(0.93); }
+
+    /* Joseon coin SVG drawn via CSS */
+    .coin-inner {
+      width: 62px; height: 62px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #f0c040, #c8941a 50%, #8a5e0a);
+      box-shadow:
+        0 3px 0 #5a3500,
+        0 5px 12px rgba(0,0,0,0.5),
+        inset 0 2px 4px rgba(255,255,255,0.25),
+        inset 0 -2px 4px rgba(0,0,0,0.3);
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      border: 2px solid #8a5e0a;
+    }
+
+    /* Square hole in center (엽전) */
+    .coin-inner::before {
+      content: '';
+      position: absolute;
+      width: 16px; height: 16px;
+      background: var(--bg-dark);
+      border-radius: 2px;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.8);
+    }
+
+    .coin-inner::after {
+      content: attr(data-label);
+      position: absolute;
+      bottom: 6px;
+      font-size: 11px;
+      font-weight: 900;
+      color: var(--ink);
+      font-family: 'Noto Serif KR', serif;
+      text-shadow: 0 1px 0 rgba(255,200,50,0.4);
+    }
+
+    .coin-label {
+      position: absolute;
+      bottom: -18px;
+      font-size: 10px;
+      color: var(--gold);
+      letter-spacing: 1px;
+      white-space: nowrap;
+    }
+
+    .raise-display {
+      text-align: center;
+      color: var(--gold-light);
+      font-size: 14px;
+      margin-top: 14px;
+      letter-spacing: 1px;
+    }
+
+    /* ── RESULT SCREEN ── */
+    .result-header { text-align: center; padding: 10px 0; }
+    .result-title {
+      font-size: 30px; color: var(--gold-light);
+      letter-spacing: 4px;
+      text-shadow: 0 0 20px rgba(240,192,64,0.5);
+    }
+
+    .section-label {
+      font-size: 12px; color: var(--gold);
+      letter-spacing: 2px; margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .result-cards-row {
+      display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+    }
+
+    .result-card-slot {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 5px;
+    }
+
+    .player-label {
+      font-size: 11px; color: var(--parchment);
+      letter-spacing: 0.5px; text-align: center;
+    }
+
+    .result-playing-card {
+      width: 52px; height: 74px;
+      background: linear-gradient(135deg, #f8f0e0, #ede0c0);
+      border: 2px solid rgba(139,26,26,0.6);
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; font-weight: 900;
+      color: var(--red);
+      box-shadow: 2px 3px 10px rgba(0,0,0,0.6);
+      position: relative;
+    }
+
+    .winner-card {
+      border-color: var(--gold) !important;
+      box-shadow: 0 0 16px rgba(200,148,26,0.8), 2px 3px 10px rgba(0,0,0,0.6) !important;
+    }
+
+    .folded-result {
+      background: linear-gradient(135deg, #2a1a0a, #1a0d05) !important;
+      color: rgba(200,148,26,0.4) !important;
+      font-size: 11px !important;
+      border-color: rgba(80,40,10,0.4) !important;
+    }
+
+    .fold-badge {
+      font-size: 8px; color: var(--red-bright);
+      background: rgba(139,26,26,0.3);
+      border: 1px solid rgba(139,26,26,0.5);
+      padding: 1px 4px; border-radius: 2px;
+    }
+
+    /* ── RANKING TABLE ── */
+    .ranking-table {
+      width: 100%; border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .ranking-table th {
+      color: var(--gold);
+      font-size: 11px; letter-spacing: 1px;
+      padding: 6px 4px; border-bottom: 1px solid rgba(200,148,26,0.3);
+      font-weight: 400;
+    }
+
+    .ranking-table td {
+      padding: 8px 4px;
+      color: var(--parchment);
+      border-bottom: 1px solid rgba(200,148,26,0.08);
+      text-align: center;
+    }
+
+    .winner-row { background: rgba(200,148,26,0.08); }
+
+    .rank-badge {
+      display: inline-block;
+      width: 26px; height: 26px; line-height: 26px;
+      border-radius: 50%;
+      background: rgba(60,30,10,0.8);
+      border: 1px solid rgba(200,148,26,0.3);
+      font-size: 12px; font-weight: 700; color: var(--parchment);
+      text-align: center;
+    }
+
+    .rank-1 { background: linear-gradient(135deg, #c8941a, #8a5e0a); color: #fff; border-color: #f0c040; }
+    .rank-2 { background: linear-gradient(135deg, #708090, #4a5560); color: #fff; }
+    .rank-3 { background: linear-gradient(135deg, #8b5e3c, #5c3a1e); color: #fff; }
+
+    .delta-pos { color: #74c69d; font-weight: 700; }
+    .delta-neg { color: #e07070; font-weight: 700; }
+    .delta-zero { color: var(--parchment); }
+
+    .save-cell { text-align: center; }
+
+    .save-btn {
+      font-size: 10px; padding: 3px 8px;
+      border-radius: 3px; cursor: pointer;
+      font-family: 'Noto Serif KR', serif;
+      margin: 0 2px;
+      transition: all 0.15s;
+      border: 1px solid transparent;
+    }
+
+    .keep-btn { background: rgba(40,80,40,0.4); color: #74c69d; border-color: rgba(100,180,100,0.3); }
+    .del-btn  { background: rgba(80,20,20,0.4); color: #e07070; border-color: rgba(180,60,60,0.3); }
+    .active-keep { background: rgba(40,180,80,0.3); border-color: #74c69d; }
+    .active-del  { background: rgba(180,40,40,0.4); border-color: #e07070; }
+
+    /* ── RESPONSIVE CARD SIZE BY PLAYER COUNT ── */
+    .poker-table-outer.size-small .playing-card {
+      width: 44px; height: 62px; font-size: 22px;
+    }
+    .poker-table-outer.size-medium .playing-card {
+      width: 48px; height: 68px; font-size: 24px;
+    }
+    .poker-table-outer.size-large .playing-card {
+      width: 58px; height: 80px; font-size: 27px;
+    }
+
+    /* ── TURN TITLE ── */
+    #turnTitle {
+      font-size: 28px; font-weight: 700;
+      color: var(--gold-light);
+      text-shadow: 0 0 20px rgba(240,192,64,0.4), 2px 3px 0 rgba(0,0,0,0.6);
+      letter-spacing: 2px;
+    }
+  </style>
+</head>
+<body>
+  <a href="main.html" style="position: fixed; top: 15px; left: 15px; z-index: 9999; background: var(--wood-dark); color: var(--gold-light); border: 2px solid var(--gold); padding: 8px 16px; font-family: 'Noto Serif KR', serif; font-weight: bold; text-decoration: none; border-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); font-size: 14px;">
+  ◀ 주막으로 
+  </a>
+  <!-- Lantern glow -->
+  <div class="lantern-glow"></div>
+
+  <!-- Falling petals -->
+  <div class="petal-container" id="petalContainer"></div>
+
+  <div class="container">
+
+    <!-- ══ START SCREEN ══ -->
+    <div id="startScreen" class="screen active">
+      <div class="game-title">인디언 포-카</div>
+      <div class="subtitle">2~10명 · 한 기기로 번갈아 플레이</div>
+      <div class="divider">✦ ◈ ✦</div>
+
+      <div class="panel">
+        <div class="panel-title">遊 戱 設 定</div>
+        <label for="playerCount">참여 인원</label>
+        <select id="playerCount" onchange="makeNameInputs()">
+          <option value="2">2명</option>
+          <option value="3">3명</option>
+          <option value="4">4명</option>
+          <option value="5">5명</option>
+          <option value="6">6명</option>
+          <option value="7">7명</option>
+          <option value="8">8명</option>
+          <option value="9">9명</option>
+          <option value="10">10명</option>
+        </select>
+        <div id="nameInputs"></div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-gold" onclick="startGame()">판 시작하기</button>
+      </div>
+    </div>
+
+    <!-- ══ READY SCREEN ══ -->
+    <div id="readyScreen" class="screen">
+      <div class="panel ready-box">
+        <div class="ready-title" id="readyTitle"></div>
+        <div class="ready-msg" id="readyMessage"></div>
+        <div class="ready-warning"> 📵 다른 분들은 화면을 보지 마시오</div>
+        <button class="btn btn-gold" onclick="showTurnScreen()">확인하기 →</button>
+      </div>
+    </div>
+
+    <!-- ══ TURN SCREEN ══ -->
+    <div id="turnScreen" class="screen">
+      <div style="text-align:center; padding: 38px 0 12px;">
+        <div id="turnTitle"></div>
+      </div>
+
+      <!-- 포커 테이블 (원형 나무 탁상) -->
+      <div class="poker-table-wrap">
+        <div class="poker-table-outer" id="pokerTableOuter">
+          <!-- Player card slots around the ring -->
+          <div class="player-ring-slots" id="playerRingSlots"></div>
+
+          <!-- Inner felt -->
+          <div class="poker-table-inner" id="pokerTableInner">
+            <div class="table-label">공유 카드판<br>나를 제외한 모든 패</div>
+            <div class="pot-display">
+              <span class="pot-icon">🪙</span>
+              <span class="pot-amount" id="potAmount">0</span>
+              <span class="pot-unit">냥 (판돈)</span>
+            </div>
+            <!-- Splash container for cup throw -->
+            <div class="splash-container" id="splashContainer"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 내 정보 -->
+      <div class="panel" style="margin-top:30px;">
+        <div class="info-row">
+          <div class="info-chip" id="myChipInfo">내 엽전: –</div>
+          <div class="info-chip" id="callInfo">–</div>
+        </div>
+      </div>
+
+      <!-- 레이즈 선택 -->
+      <div class="panel">
+        <div class="panel-title">賭 金 選 擇 (누를수록 누적)</div>
+        <div class="coin-row">
+          <div class="coin" onclick="addRaise(5)">
+            <div class="coin-inner" data-label="五"></div>
+            <div class="coin-label">+5냥</div>
+          </div>
+          <div class="coin" onclick="addRaise(10)">
+            <div class="coin-inner" data-label="十"></div>
+            <div class="coin-label">+10냥</div>
+          </div>
+          <div class="coin" onclick="addRaise(20)">
+            <div class="coin-inner" data-label="廿"></div>
+            <div class="coin-label">+20냥</div>
+          </div>
+        </div>
+        <div class="raise-display" id="selectedAmount" style="margin-top: 30px;">선택된 레이즈: 0냥</div>
+        <div class="btn-row" style="margin-top:14px;">
+          <button class="btn btn-ghost" onclick="clearRaise()">초기화</button>
+        </div>
+      </div>
+
+      <!-- 액션 버튼 -->
+      <div class="btn-row">
+        <button class="btn btn-gold" onclick="chooseAction('call')">따라가기 (Call)</button>
+        <button class="btn btn-gold" onclick="chooseAction('raise')">올리기 (Raise)</button>
+        <button class="btn btn-red" onclick="chooseAction('fold')">✖ 포기 (Fold)</button>
+      </div>
+    </div>
+
+    <!-- ══ RESULT SCREEN ══ -->
+    <div id="resultScreen" class="screen">
+      <div class="result-header">
+        <div class="game-title" style="font-size:28px; padding:12px 0 4px;">결 과 발 표</div>
+      </div>
+
+      <div class="panel">
+        <div class="section-label">공개된 패</div>
+        <div class="result-cards-row" id="resultCards"></div>
+        <div style="text-align:center; margin-top:12px; font-size:15px; font-weight:700; color:var(--gold-light);" id="winnerResult"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">🏆 이번 판 순위</div>
+        <table class="ranking-table">
+          <thead>
+            <tr>
+              <th>순위</th><th>패자</th><th>획득/손실</th><th>총 엽전</th><th>다음 참여</th>
+            </tr>
+          </thead>
+          <tbody id="rankingBody"></tbody>
+        </table>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-gold" onclick="goNextGame()">다음 판 시작 →</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+  function saveIndianPokerLog(winnerName, detailStr) {
+  let logs = JSON.parse(localStorage.getItem('joseon_arcade_unified_logs') || '[]');
+  const now = new Date();
+  const timeStr = `${now.getMonth()+1}/${now.getDate()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  
+  logs.unshift({
+    game: "인디언 포-카",
+    time: timeStr,
+    result: "경합 종료",
+    detail: "우승자: " + winnerName + " (" + detailStr + ")"
+  });
+  if(logs.length > 40) logs = logs.slice(0, 40);
+  localStorage.setItem('joseon_arcade_unified_logs', JSON.stringify(logs));
+}
+// 결과 화면 렌더링 함수 내 1등 판별 시점에 saveIndianPokerLog(players[0].name, players[0].chips + '냥 보유'); 형태로 호출하면 매끄럽게 기록됩니다.
+    // ══════════════════════════════════════════
+    //  FALLING PETALS ANIMATION
+    // ══════════════════════════════════════════
+    (function initPetals() {
+      const container = document.getElementById('petalContainer');
+      const colors = ['#f9a8c9','#f7c5d5','#ffd4e8','#ffb6c1','#ff9eb5','#ffc8d9','#ffe4ee'];
+      const count = 22;
+
+      for (let i = 0; i < count; i++) {
+        const petal = document.createElement('div');
+        petal.className = 'petal';
+        const left = Math.random() * 100;
+        const duration = 6 + Math.random() * 10;
+        const delay = Math.random() * 12;
+        const drift = (Math.random() - 0.5) * 200;
+        const spin = (Math.random() - 0.5) * 720;
+        const size = 7 + Math.random() * 9;
+        const color = colors[Math.floor(Math.random() * colors.length)];
+
+        petal.style.cssText = `
+          left: ${left}%;
+          width: ${size}px; height: ${size * 1.4}px;
+          background: ${color};
+          animation-duration: ${duration}s;
+          animation-delay: ${delay}s;
+          --drift: ${drift}px;
+          --spin: ${spin}deg;
+          opacity: 0;
+        `;
+        container.appendChild(petal);
+      }
+    })();
+
+    // ══════════════════════════════════════════
+    //  GAME STATE VARIABLES
+    // ══════════════════════════════════════════
+    let players = [];
+    let currentPlayerIndex = 0;
+    let pot = 0;
+    let selectedRaiseTotal = 0;
+    let currentBet = 0;
+    let lastRaiseAmount = 0;
+    const ANTE = 5; 
+    let pendingPlayers = [];
+    let chipsAtRoundStart = [];
+    let savedPlayers = [];
+    const SAVED_PLAYERS_KEY = 'indianPokerSavedPlayers';
+
+    // ══════════════════════════════════════════
+    //  LOCAL STORAGE MANAGEMENT
+    // ══════════════════════════════════════════
+    function loadSavedPlayersFromStorage() {
+      try {
+        const stored = localStorage.getItem(SAVED_PLAYERS_KEY);
+        const parsed = stored ? JSON.parse(stored) : [];
+        savedPlayers = Array.isArray(parsed)
+          ? parsed.filter(p => p && typeof p.name === 'string' && p.name.trim() !== '')
+                  .map(p => ({ name: p.name, chips: Number(p.chips) || 100, keep: p.keep !== false }))
+          : [];
+      } catch(e) { savedPlayers = []; }
+    }
+
+    function saveSavedPlayersToStorage() {
+      const data = savedPlayers.filter(p => p.keep !== false)
+                               .map(p => ({ name: p.name, chips: p.chips, keep: true }));
+      localStorage.setItem(SAVED_PLAYERS_KEY, JSON.stringify(data));
+    }
+
+    window.addEventListener('load', function() {
+      loadSavedPlayersFromStorage();
+      makeNameInputs();
+    });
+
+    function escapeHTML(v) {
+      return String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+                      .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    }
+
+    // ══════════════════════════════════════════
+    //  UI & FORMS MANAGEMENT
+    // ══════════════════════════════════════════
+    function makeNameInputs() {
+      const count = Number(document.getElementById('playerCount').value);
+      const box = document.getElementById('nameInputs');
+      box.innerHTML = '';
+      for (let i = 1; i <= count; i++) {
+        const saved = savedPlayers[i - 1];
+        const defaultName = saved ? saved.name : '';
+        const placeholder = saved ? saved.name : ('패자 ' + i);
+        const chipText = saved ? (saved.chips + '냥 남음') : '저장 없음';
+        const chipClass = saved ? 'saved-chip-pill' : 'saved-chip-pill empty';
+        
+        let options = '<option value="">불러오기</option>';
+        savedPlayers.forEach(sp => {
+          const sel = saved && sp.name === saved.name ? ' selected' : '';
+          options += `<option value="${escapeHTML(sp.name)}"${sel}>${escapeHTML(sp.name)} (${sp.chips}냥)</option>`;
+        });
+
+        box.innerHTML +=
+          `<div class="player-input-row">
+            <input type="text" id="playerName${i}" placeholder="${escapeHTML(placeholder)}" value="${escapeHTML(defaultName)}" oninput="updateNameChip(${i})" />
+            <select id="loadPlayer${i}" class="load-player-select" onchange="loadSavedPlayer(${i})">${options}</select>
+            <div id="savedChip${i}" class="${chipClass}">${chipText}</div>
+          </div>`;
+      }
+    }
+
+    function loadSavedPlayer(index) {
+      const sel = document.getElementById('loadPlayer' + index);
+      const inp = document.getElementById('playerName' + index);
+      if (sel && inp) { inp.value = sel.value; updateNameChip(index); }
+    }
+
+    function updateNameChip(index) {
+      const inp = document.getElementById('playerName' + index);
+      const box = document.getElementById('savedChip' + index);
+      if (!inp || !box) return;
+      const sp = savedPlayers.find(s => s.name === inp.value.trim());
+      if (sp) { box.textContent = sp.chips + '냥 남음'; box.className = 'saved-chip-pill'; }
+      else     { box.textContent = '저장 없음';          box.className = 'saved-chip-pill empty'; }
+    }
+
+    function changeScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    // ══════════════════════════════════════════
+    //  CORE GAME LOGIC
+    // ══════════════════════════════════════════
+    function startGame() {
+      const count = Number(document.getElementById('playerCount').value);
+      players = [];
+      for (let i = 1; i <= count; i++) {
+        const inp = document.getElementById('playerName' + i);
+        const name = (inp && inp.value.trim()) || ('패자 ' + i);
+        const sp = savedPlayers.find(s => s.name === name);
+        players.push({ name, chips: sp ? sp.chips : 100, card: 0, folded: false, betThisRound: 0 });
+      }
+      startRound();
+    }
+
+    function startRound() {
+      if (players.length < 2) { alert('2명 이상이어야 합니다.'); return; }
+      chipsAtRoundStart = players.map(p => p.chips);
+      const broke = players.find(p => p.chips < ANTE);
+      if (broke) {
+        alert(broke.name + '님은 참가비 ' + ANTE + '냥이 부족합니다.');
+        changeScreen('startScreen'); makeNameInputs(); return;
+      }
+      
+      pot = 0; selectedRaiseTotal = 0; currentBet = ANTE; lastRaiseAmount = 0;
+      currentPlayerIndex = 0; pendingPlayers = [];
+      
+      dealCards();
+      
+      for (let i = 0; i < players.length; i++) {
+        players[i].folded = false;
+        players[i].chips -= ANTE; players[i].betThisRound = ANTE;
+        pot += ANTE; pendingPlayers.push(i);
+      }
+      showReadyScreen();
+    }
+
+    function dealCards() {
+      let deck = [];
+      for (let v = 1; v <= 10; v++) for (let c = 0; c < 4; c++) deck.push(v);
+      for (let i = deck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+      }
+      for (let i = 0; i < players.length; i++) players[i].card = deck[i];
+    }
+
+    function showReadyScreen() {
+      const p = players[currentPlayerIndex];
+      document.getElementById('readyTitle').textContent = p.name + '님의 차례';
+      document.getElementById('readyMessage').textContent = '준비되셨으면 확인 버튼을 눌러주세요.';
+      changeScreen('readyScreen');
+    }
+
+    function showTurnScreen() {
+      selectedRaiseTotal = 0;
+      const p = players[currentPlayerIndex];
+      const needToCall = currentBet - p.betThisRound;
+      const minRaise = Math.max(5, currentBet + 5 - p.betThisRound);
+      
+      document.getElementById('turnTitle').textContent = p.name + '님의 선택';
+      document.getElementById('potAmount').textContent = pot;
+      document.getElementById('myChipInfo').innerHTML = `내 엽전: <span class="highlight">${p.chips}냥</span>`;
+      document.getElementById('callInfo').innerHTML = needToCall > 0
+        ? `따라가기 <span class="highlight">${needToCall}냥</span> · 올리기 최소 <span class="highlight">${minRaise}냥</span>`
+        : `Check 가능 · 올리기 최소 <span class="highlight">${minRaise}냥</span>`;
+
+      renderTableRing();
+      updateSelectedAmount();
+      changeScreen('turnScreen');
+    }
+
+    // ══════════════════════════════════════════
+    //  RENDER TABLE RING (Ring Placement)
+    // ══════════════════════════════════════════
+    function renderTableRing() {
+      const slotsContainer = document.getElementById('playerRingSlots');
+      slotsContainer.innerHTML = '';
+
+      const others = players.map((p, i) => ({ p, i }))
+                             .filter(({ i }) => i !== currentPlayerIndex);
+
+      if (others.length === 0) return;
+
+      const outerEl = document.getElementById('pokerTableOuter');
+      outerEl.classList.remove('size-small', 'size-medium', 'size-large');
+      if (players.length <= 3)       outerEl.classList.add('size-large');
+      else if (players.length <= 6)  outerEl.classList.add('size-medium');
+      else                           outerEl.classList.add('size-small');
+      
+      const size = outerEl.offsetWidth || 400;
+      const cx = size / 2;
+      const cy = size / 2;
+      const R = size * 0.39;
+      const n = others.length;
+
+      others.forEach(({ p, i: playerIdx }, idx) => {
+        const angle = (idx / n) * 2 * Math.PI - Math.PI / 2;
+        const x = cx + R * Math.cos(angle);
+        const y = cy + R * Math.sin(angle);
+
+        const slot = document.createElement('div');
+        slot.className = 'player-slot';
+        slot.style.left = x + 'px';
+        slot.style.top  = y + 'px';
+
+        const label = document.createElement('div');
+        label.className = 'player-label';
+        label.textContent = p.name;
+
+        const card = document.createElement('div');
+        if (p.folded) {
+          card.className = 'playing-card folded-card';
+          card.textContent = 'FOLD';
+        } else {
+          card.className = 'playing-card';
+          card.textContent = p.card;
+        }
+
+        const info = document.createElement('div');
+        info.className = 'table-card-info';
+        if (p.folded) {
+          info.innerHTML = `<span class="tci-bet">${p.betThisRound}냥</span><span class="tci-fold">폴드</span>`;
+        } else {
+          info.innerHTML = `<span class="tci-bet">${p.betThisRound}냥</span><span class="tci-chips">${p.chips}냥</span>`;
+        }
+
+        const cup = document.createElement('div');
+        cup.className = 'sake-cup';
+        cup.setAttribute('data-player', playerIdx);
+        cup.title = '술잔 던지기!';
+        cup.innerHTML = makeSakeCupSVG();
+        cup.addEventListener('click', (e) => throwCup(e, cup, x, y));
+
+        const main = document.createElement('div');
+        main.className = 'player-main';
+        main.appendChild(label);
+        main.appendChild(card);
+        main.appendChild(info);
+
+        slot.appendChild(main);
+        slot.appendChild(cup);
+        slotsContainer.appendChild(slot);
+      });
+    }
+
+    function makeSakeCupSVG() {
+      return `<svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="16" cy="27" rx="7" ry="2.5" fill="#5c3a1e"/>
+        <path d="M9 10 Q9 26 16 26 Q23 26 23 10 Z" fill="url(#sake1)" stroke="#8a5e0a" stroke-width="0.8"/>
+        <ellipse cx="16" cy="10" rx="7" ry="2.5" fill="#c8941a" stroke="#8a5e0a" stroke-width="0.5"/>
+        <ellipse cx="16" cy="12" rx="5.5" ry="1.8" fill="rgba(220,180,120,0.7)"/>
+        <path d="M11 13 Q12 11 13 13" stroke="rgba(255,240,200,0.6)" stroke-width="0.8" fill="none"/>
+        <path d="M12 18 L14 16 L16 18 L18 16 L20 18" stroke="rgba(200,148,26,0.5)" stroke-width="0.6" fill="none"/>
+        <defs>
+          <linearGradient id="sake1" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#7a4e28"/>
+            <stop offset="40%" stop-color="#a06030"/>
+            <stop offset="100%" stop-color="#5c3a1e"/>
+          </linearGradient>
+        </defs>
+      </svg>`;
+    }
+
+    // ══════════════════════════════════════════
+    //  INTERACTIVE ACTIONS & ANIMATIONS
+    // ══════════════════════════════════════════
+    function throwCup(event, cupEl, slotX, slotY) {
+      event.stopPropagation();
+      const outerEl = document.getElementById('pokerTableOuter');
+      const size = outerEl.offsetWidth || 400;
+      const cx = size / 2;
+      const cy = size / 2;
+
+      const dx = cx - slotX;
+      const dy = cy - slotY;
+
+      cupEl.style.setProperty('--tx', (dx * 0.5) + 'px');
+      cupEl.style.setProperty('--ty', (dy * 0.5) + 'px');
+      cupEl.style.setProperty('--tx2', (dx * 0.8) + 'px');
+      cupEl.style.setProperty('--ty2', (dy * 0.8) + 'px');
+      cupEl.style.setProperty('--tx3', dx + 'px');
+      cupEl.style.setProperty('--ty3', dy + 'px');
+
+      cupEl.classList.add('cup-throwing');
+
+      setTimeout(() => {
+        createSplash();
+        cupEl.classList.remove('cup-throwing');
+      }, 700);
+    }
+
+    function createSplash() {
+      const container = document.getElementById('splashContainer');
+
+      for (let i = 0; i < 8; i++) {
+        const drop = document.createElement('div');
+        drop.className = 'splash-drop';
+        const angle = (i / 8) * 360;
+        const dist = 15 + Math.random() * 25;
+        const x = Math.cos(angle * Math.PI / 180) * dist;
+        const y = Math.sin(angle * Math.PI / 180) * dist;
+        drop.style.left = (50 + x) + '%';
+        drop.style.top  = (50 + y) + '%';
+        drop.style.animationDelay = (Math.random() * 0.15) + 's';
+        container.appendChild(drop);
+        setTimeout(() => drop.remove(), 1000);
+      }
+
+      for (let w = 0; w < 3; w++) {
+        const wave = document.createElement('div');
+        wave.className = 'splash-wave';
+        wave.style.left = '50%';
+        wave.style.top  = '50%';
+        wave.style.animationDelay = (w * 0.2) + 's';
+        container.appendChild(wave);
+        setTimeout(() => wave.remove(), 1500);
+      }
+
+      const overflow = document.createElement('div');
+      overflow.className = 'water-overflow';
+      overflow.style.left = '50%';
+      overflow.style.top  = '50%';
+      container.appendChild(overflow);
+      setTimeout(() => overflow.remove(), 2000);
+    }
+
+    function addRaise(amount) {
+      selectedRaiseTotal += amount;
+      updateSelectedAmount();
+    }
+
+    function clearRaise() {
+      selectedRaiseTotal = 0;
+      updateSelectedAmount();
+    }
+
+    function updateSelectedAmount() {
+      document.getElementById('selectedAmount').textContent = `선택된 레이즈: ${selectedRaiseTotal}냥`;
+    }
+
+    // ══════════════════════════════════════════
+    //  BETTING PROCESSING LOGIC
+    // ══════════════════════════════════════════
+    function chooseAction(action) {
+      const p = players[currentPlayerIndex];
+      const needToCall = currentBet - p.betThisRound;
+
+      if (action === 'fold') {
+        p.folded = true;
+        removeFromPending(currentPlayerIndex);
+        if (activePlayerCount() === 1) {
+          const wi = players.findIndex(x => !x.folded);
+          finishByOnlyOneLeft(wi); return;
+        }
+        goNextTurn(); return;
+      }
+
+      if (action === 'call') {
+        if (p.chips < needToCall) { alert('따라가기 할 엽전이 부족합니다.'); return; }
+        p.chips -= needToCall; p.betThisRound += needToCall; pot += needToCall;
+        removeFromPending(currentPlayerIndex);
+        if (pendingPlayers.length === 0) showdown(); else goNextTurn();
+        return;
+      }
+
+      if (action === 'raise') {
+        if (selectedRaiseTotal <= 0) { alert('올리기 금액을 선택하세요.'); return; }
+        const newTotalBet = p.betThisRound + selectedRaiseTotal;
+        const minNeeded = currentBet + 5 - p.betThisRound;
+        if (selectedRaiseTotal < minNeeded) { alert('올리기 최소 ' + minNeeded + '냥 필요합니다.'); return; }
+        if (p.chips < selectedRaiseTotal) { alert('엽전이 부족합니다.'); return; }
+        
+        p.chips -= selectedRaiseTotal; p.betThisRound = newTotalBet;
+        pot += selectedRaiseTotal; currentBet = newTotalBet; lastRaiseAmount = selectedRaiseTotal;
+        
+        pendingPlayers = players.map((_,i) => i).filter(i => !players[i].folded && i !== currentPlayerIndex);
+        goNextTurn();
+      }
+    }
+
+    function removeFromPending(index) {
+      pendingPlayers = pendingPlayers.filter(i => i !== index);
+    }
+
+    function goNextTurn() {
+      if (pendingPlayers.length === 0) { showdown(); return; }
+      let next = currentPlayerIndex;
+      let safety = 0;
+      do {
+        next = (next + 1) % players.length;
+        safety++;
+      } while ((players[next].folded || !pendingPlayers.includes(next)) && safety <= players.length + 1);
+      
+      currentPlayerIndex = next;
+      showReadyScreen();
+    }
+
+    function activePlayerCount() {
+      return players.filter(p => !p.folded).length;
+    }
+
+    function finishByOnlyOneLeft(wi) {
+      players[wi].chips += pot; pot = 0;
+      renderResultScreen('다른 패자들이 모두 포기하였습니다.', [wi]);
+    }
+
+    // ══════════════════════════════════════════
+    //  SHOWDOWN & RESULT DISPLAYS
+    // ══════════════════════════════════════════
+    function showdown() {
+      let maxCard = -1; let winners = [];
+      for (let i = 0; i < players.length; i++) {
+        if (!players[i].folded) {
+          if (players[i].card > maxCard) { maxCard = players[i].card; winners = [i]; }
+          else if (players[i].card === maxCard) winners.push(i);
+        }
+      }
+      const prize = winners.length > 0 ? Math.floor(pot / winners.length) : 0;
+      winners.forEach(wi => players[wi].chips += prize);
+      pot = 0;
+      
+      const subtitle = winners.length === 1
+        ? `${players[winners[0]].name}님 승리!`
+        : `무승부: ${winners.map(i => players[i].name).join(', ')}`;
+      renderResultScreen(subtitle, winners);
+    }
+
+    function renderResultScreen(subtitle, winners) {
+      const row = document.getElementById('resultCards');
+      row.innerHTML = '';
+      players.forEach((p, i) => {
+        const slot = document.createElement('div');
+        slot.className = 'result-card-slot';
+        const label = document.createElement('div');
+        label.className = 'player-label'; label.textContent = p.name;
+        const card = document.createElement('div');
+        card.className = 'result-playing-card'
+          + (winners.includes(i) ? ' winner-card' : '')
+          + (p.folded ? ' folded-result' : '');
+        card.textContent = p.card;
+        slot.appendChild(label); slot.appendChild(card);
+        if (p.folded) {
+          const badge = document.createElement('div');
+          badge.className = 'fold-badge'; badge.textContent = '포기';
+          slot.appendChild(badge);
+        }
+        row.appendChild(slot);
+      });
+
+      document.getElementById('winnerResult').textContent = subtitle;
+
+      const ranked = players.map((p, i) => ({
+        name: p.name, chips: p.chips,
+        delta: p.chips - chipsAtRoundStart[i],
+        isWinner: winners.includes(i)
+      }));
+      ranked.sort((a, b) => b.chips - a.chips);
+
+      savedPlayers = players.map(p => ({ name: p.name, chips: p.chips, keep: true }));
+      saveSavedPlayersToStorage();
+
+      const tbody = document.getElementById('rankingBody');
+      tbody.innerHTML = '';
+      let prevChips = null; let displayRank = 0;
+      ranked.forEach((r, idx) => {
+        const tr = document.createElement('tr');
+        tr.id = 'rank-row-' + r.name;
+        if (r.isWinner) tr.className = 'winner-row';
+        if (r.chips !== prevChips) displayRank = idx + 1;
+        prevChips = r.chips;
+        const badgeClass = displayRank <= 3 ? 'rank-' + displayRank : '';
+        const dc = r.delta > 0 ? 'delta-pos' : r.delta < 0 ? 'delta-neg' : 'delta-zero';
+        const dt = r.delta > 0 ? '+' + r.delta : '' + r.delta;
+        const medal = displayRank === 1 ? '🥇' : displayRank === 2 ? '🥈' : displayRank === 3 ? '🥉' : '';
+        
+        tr.innerHTML =
+          `<td><span class="rank-badge ${badgeClass}">${displayRank}</span></td>` +
+          `<td>${medal ? medal + ' ' : ''}${r.name}</td>` +
+          `<td><span class="${dc}">${dt}냥</span></td>` +
+          `<td><strong>${r.chips}냥</strong></td>` +
+          `<td class="save-cell">
+            <button class="save-btn keep-btn active-keep" onclick="setSave('${r.name}', true)">저장</button>
+            <button class="save-btn del-btn" onclick="setSave('${r.name}', false)">삭제</button>
+          </td>`;
+        tbody.appendChild(tr);
+      });
+      
+    try {
+      let unifiedLogs = JSON.parse(localStorage.getItem('joseon_arcade_unified_logs') || '[]');
+      const now = new Date();
+      const timeStr = `${now.getMonth()+1}/${now.getDate()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+      
+      // 현재 참여자 중 가장 많은 칩을 가진 최종 우승자 찾기
+      let winnerName = "없음";
+      let winnerChips = 0;
+      if (typeof players !== 'undefined' && players.length > 0) {
+        let sortedPlayers = [...players].sort((a, b) => b.chips - a.chips);
+        winnerName = sortedPlayers[0].name;
+        winnerChips = sortedPlayers[0].chips;
+      }
+      
+      unifiedLogs.unshift({
+        game: "인디언 포-카",
+        time: timeStr,
+        result: "경합 종료",
+        detail: `최종 우승: ${winnerName} (${winnerChips}냥 보유)`
+      });
+      
+      if(unifiedLogs.length > 40) unifiedLogs = unifiedLogs.slice(0, 40);
+      localStorage.setItem('joseon_arcade_unified_logs', JSON.stringify(unifiedLogs));
+    } catch(e) { console.error("통합 장부 기록 실패:", e); }
+
+      changeScreen('resultScreen');
+    }
+
+    function setSave(name, keep) {
+      const entry = savedPlayers.find(s => s.name === name);
+      if (entry) entry.keep = keep;
+      saveSavedPlayersToStorage();
+      const row = document.getElementById('rank-row-' + name);
+      if (row) {
+        row.querySelector('.keep-btn')[keep ? 'add' : 'remove']('active-keep');
+        row.querySelector('.del-btn')[keep ? 'remove' : 'add']('active-del');
+        row.style.opacity = keep ? '1' : '0.45';
+      }
+    }
+
+    function goNextGame() {
+      savedPlayers = savedPlayers.filter(s => s.keep);
+      saveSavedPlayersToStorage();
+      players = [];
+      changeScreen('startScreen');
+      makeNameInputs();
+    }
+
+    window.addEventListener('resize', () => {
+      if (document.getElementById('turnScreen').classList.contains('active')) {
+        renderTableRing();
+      }
+    });
+  </script>
+</body>
+</html>
