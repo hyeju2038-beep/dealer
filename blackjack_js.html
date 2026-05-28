@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>조선 블랙잭</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght=400;600;700;900&family=Noto+Sans+KR:wght=400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-dark: #0d0a06;
+  --bg-mid: #1a1208;
+  --wood-dark: #2c1a0a;
+  --wood-mid: #3d2510;
+  --wood-light: #5c3a1e;
+  --wood-highlight: #7a4e28;
+  --gold: #c8941a;
+  --gold-light: #f0c040;
+  --gold-pale: #fae08a;
+  --red: #8b1a1a;
+  --red-bright: #c0392b;
+  --cream: #f5e6c8;
+  --parchment: #e8d4a0;
+  --ink: #1a0f05;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background-color: var(--bg-dark);
+  color: var(--cream);
+  font-family: 'Noto Sans KR', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  background-image: radial-gradient(circle at center, var(--bg-mid) 0%, var(--bg-dark) 100%);
+}
+
+.header {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 2px solid var(--wood-light);
+  padding-bottom: 10px;
+}
+
+.btn-back {
+  background-color: var(--wood-dark);
+  color: var(--gold-pale);
+  border: 1px solid var(--gold);
+  padding: 8px 16px;
+  cursor: pointer;
+  font-family: 'Noto Serif KR', serif;
+  font-weight: 600;
+  border-radius: 4px;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+.btn-back:hover {
+  background-color: var(--wood-light);
+  color: var(--gold-light);
+}
+
+.game-title {
+  font-family: 'Noto Serif KR', serif;
+  font-weight: 900;
+  color: var(--gold);
+  font-size: 24px;
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.8);
+}
+
+.table {
+  width: 100%;
+  max-width: 600px;
+  background-color: var(--bg-mid);
+  border: 4px solid var(--wood-mid);
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.area {
+  padding: 12px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 8px;
+  border: 1px solid rgba(200,148,26,0.1);
+}
+.area-title {
+  font-family: 'Noto Serif KR', serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--parchment);
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+}
+.score {
+  color: var(--gold-light);
+  font-weight: bold;
+}
+
+.cards {
+  display: flex;
+  gap: 8px;
+  min-height: 80px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.card {
+  width: 52px;
+  height: 78px;
+  background-color: var(--parchment);
+  color: var(--ink);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 5px;
+  font-weight: bold;
+  font-size: 14px;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.5);
+  border: 1px solid var(--cream);
+}
+.card.red { color: var(--red-bright); }
+.card.hidden {
+  background: linear-gradient(45deg, var(--wood-dark) 25%, var(--wood-mid) 25%, var(--wood-mid) 50%, var(--wood-dark) 50%, var(--wood-dark) 75%, var(--wood-mid) 75%, var(--wood-mid) 100%);
+  background-size: 15px 15px;
+  border: 2px solid var(--gold);
+}
+
+.controls {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.betting-zone {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--wood-dark);
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid var(--wood-light);
+}
+.bet-info {
+  font-family: 'Noto Serif KR', serif;
+}
+.bet-buttons {
+  display: flex;
+  gap: 8px;
+}
+.btn-bet {
+  background: var(--wood-mid);
+  color: var(--cream);
+  border: 1px solid var(--wood-light);
+  padding: 6px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.btn-bet:hover { background: var(--wood-light); }
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+}
+.btn-action {
+  flex: 1;
+  padding: 15px;
+  font-size: 18px;
+  font-family: 'Noto Serif KR', serif;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+.btn-hit { background-color: var(--gold); color: var(--ink); }
+.btn-hit:hover { background-color: var(--gold-light); }
+.btn-stand { background-color: var(--wood-light); color: var(--cream); }
+.btn-stand:hover { background-color: var(--wood-highlight); }
+.btn-deal { background-color: var(--red); color: var(--cream); width: 100%; }
+.btn-deal:hover { background-color: var(--red-bright); }
+
+.result-overlay {
+  text-align: center;
+  font-family: 'Noto Serif KR', serif;
+  font-size: 22px;
+  font-weight: 700;
+  margin-top: 5px;
+  min-height: 32px;
+}
+.result-overlay.win { color: var(--gold-light); }
+.result-overlay.lose { color: var(--red-bright); }
+.result-overlay.draw { color: var(--cream); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <a href="main.html" class="btn-back">◀ 주막으로</a>
+  <div class="game-title">조선 블랙잭</div>
+  <div style="width: 80px;"></div>
+</div>
+
+<div class="table">
+  <!-- 물주 구역 -->
+  <div class="area">
+    <div class="area-title">
+      <span>물주 (딜러)</span>
+      <span class="score" id="dealer-score-display">-</span>
+    </div>
+    <div class="cards" id="dealer-cards"></div>
+  </div>
+
+  <!-- 동료 꾼 1 구역 -->
+  <div class="area">
+    <div class="area-title">
+      <span>동료 꾼 갑 (김선달)</span>
+      <span class="score" id="ai1-score-display">-</span>
+    </div>
+    <div class="cards" id="ai1-cards"></div>
+  </div>
+
+  <!-- 동료 꾼 2 구역 -->
+  <div class="area">
+    <div class="area-title">
+      <span>동료 꾼 을 (황진이)</span>
+      <span class="score" id="ai2-score-display">-</span>
+    </div>
+    <div class="cards" id="ai2-cards"></div>
+  </div>
+
+  <!-- 플레이어 구역 -->
+  <div class="area" style="border: 1px solid rgba(240,192,64,0.4); background: rgba(200,148,26,0.05);">
+    <div class="area-title">
+      <span style="color:var(--gold-light)">나 (꾼)</span>
+      <span class="score" id="player-score-display">-</span>
+    </div>
+    <div class="cards" id="player-cards"></div>
+  </div>
+
+  <div class="result-overlay" id="result-message"></div>
+</div>
+
+<div class="controls">
+  <div class="betting-zone" id="betting-zone">
+    <div class="bet-info">기본 판돈: <span id="current-bet" style="color:var(--gold-light)">10</span> 냥</div>
+    <div class="bet-buttons">
+      <button class="btn-bet" onclick="changeBet(5)">+5냥</button>
+      <button class="btn-bet" onclick="changeBet(10)">+10냥</button>
+      <button class="btn-bet" onclick="resetBet()">초기화</button>
+    </div>
+  </div>
+
+  <div class="action-buttons">
+    <button class="btn-action btn-deal" id="btn-deal" onclick="startRound()">패 돌리기 (판돈 걸기)</button>
+    <button class="btn-action btn-hit" id="btn-hit" onclick="hit()" style="display:none;">패 받기 (Hit)</button>
+    <button class="btn-action btn-stand" id="btn-stand" onclick="stand()" style="display:none;">그만 받기 (Stand)</button>
+  </div>
+</div>
+
+<script>
+let deck = [];
+let playerHand = [];
+let ai1Hand = [];
+let ai2Hand = [];
+let dealerHand = [];
+let currentBet = 10;
+let isRoundActive = false;
+
+const suits = ['♠', '◆', '♥', '♣'];
+const suitNames = { '♠': 'black', '◆': 'red', '♥': 'red', '♣': 'black' };
+const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+
+function changeBet(amt) {
+  if (isRoundActive) return;
+  currentBet += amt;
+  document.getElementById('current-bet').innerText = currentBet;
+}
+
+function resetBet() {
+  if (isRoundActive) return;
+  currentBet = 10;
+  document.getElementById('current-bet').innerText = currentBet;
+}
+
+function createDeck() {
+  deck = [];
+  for (let suit of suits) {
+    for (let val of values) {
+      deck.push({ suit, val });
+    }
+  }
+}
+
+function shuffleDeck() {
+  for (let i = deck.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [deck[i], deck[j]] = [deck[j], deck[i]];
+  }
+}
+
+function getCardValue(card) {
+  if (['J', 'Q', 'K'].includes(card.val)) return 10;
+  if (card.val === 'A') return 11;
+  return parseInt(card.val);
+}
+
+function calculateScore(hand) {
+  let score = 0;
+  let aces = 0;
+  for (let card of hand) {
+    score += getCardValue(card);
+    if (card.val === 'A') aces++;
+  }
+  while (score > 21 && aces > 0) {
+    score -= 10;
+    aces--;
+  }
+  return score;
+}
+
+function startRound() {
+  createDeck();
+  shuffleDeck();
+
+  // 모든 참여자에게 2장씩 분배
+  playerHand = [deck.pop(), deck.pop()];
+  ai1Hand = [deck.pop(), deck.pop()];
+  ai2Hand = [deck.pop(), deck.pop()];
+  dealerHand = [deck.pop(), deck.pop()];
+  
+  isRoundActive = true;
+
+  document.getElementById('result-message').innerText = "";
+  document.getElementById('result-message').className = "result-overlay";
+
+  document.getElementById('btn-deal').style.display = 'none';
+  document.getElementById('btn-hit').style.display = 'block';
+  document.getElementById('btn-stand').style.display = 'block';
+  document.getElementById('betting-zone').style.opacity = 0.5;
+
+  renderHands(true);
+
+  if (calculateScore(playerHand) === 21) {
+    stand(); 
+  }
+}
+
+function renderHands(hideDealer) {
+  // 1. 나 (플레이어) 패 그리기
+  const playerZone = document.getElementById('player-cards');
+  playerZone.innerHTML = '';
+  playerHand.forEach(card => playerZone.appendChild(createCardUI(card)));
+  const pScore = calculateScore(playerHand);
+  document.getElementById('player-score-display').innerText = pScore + '점' + (pScore > 21 ? ' (파산)' : '');
+
+  // 2. 동료 꾼 갑 패 그리기
+  const ai1Zone = document.getElementById('ai1-cards');
+  ai1Zone.innerHTML = '';
+  ai1Hand.forEach(card => ai1Zone.appendChild(createCardUI(card)));
+  const a1Score = calculateScore(ai1Hand);
+  document.getElementById('ai1-score-display').innerText = a1Score + '점' + (a1Score > 21 ? ' (파산)' : '');
+
+  // 3. 동료 꾼 을 패 그리기
+  const ai2Zone = document.getElementById('ai2-cards');
+  ai2Zone.innerHTML = '';
+  ai2Hand.forEach(card => ai2Zone.appendChild(createCardUI(card)));
+  const a2Score = calculateScore(ai2Hand);
+  document.getElementById('ai2-score-display').innerText = a2Score + '점' + (a2Score > 21 ? ' (파산)' : '');
+
+  // 4. 물주 패 그리기
+  const dealerZone = document.getElementById('dealer-cards');
+  dealerZone.innerHTML = '';
+  dealerHand.forEach((card, idx) => {
+    if (hideDealer && idx === 1) {
+      const hiddenCard = document.createElement('div');
+      hiddenCard.className = 'card hidden';
+      dealerZone.appendChild(hiddenCard);
+    } else {
+      dealerZone.appendChild(createCardUI(card));
+    }
+  });
+
+  if (hideDealer) {
+    document.getElementById('dealer-score-display').innerText = '?? 점';
+  } else {
+    const dScore = calculateScore(dealerHand);
+    document.getElementById('dealer-score-display').innerText = dScore + '점' + (dScore > 21 ? ' (파산)' : '');
+  }
+}
+
+function createCardUI(card) {
+  const cardEl = document.createElement('div');
+  const isRed = suitNames[card.suit] === 'red';
+  cardEl.className = `card ${isRed ? 'red' : ''}`;
+  
+  cardEl.innerHTML = `
+    <div>${card.val}</div>
+    <div style="align-self: center; font-size: 20px;">${card.suit}</div>
+    <div style="align-self: flex-end; transform: rotate(180deg);">${card.val}</div>
+  `;
+  return cardEl;
+}
+
+function hit() {
+  if (!isRoundActive) return;
+  playerHand.push(deck.pop());
+  renderHands(true);
+
+  if (calculateScore(playerHand) > 21) {
+    // 플레이어 파산 시에도 다른 AI 참여자들과 딜러는 패를 마저 완성시킴
+    runAIAndDealerTurns();
+    endRound('lose');
+  }
+}
+
+function stand() {
+  if (!isRoundActive) return;
+
+  runAIAndDealerTurns();
+
+  const pScore = calculateScore(playerHand);
+  const dScore = calculateScore(dealerHand);
+
+  if (pScore > 21) {
+    endRound('lose');
+  } else if (dScore > 21) {
+    endRound('win');
+  } else if (pScore > dScore) {
+    endRound('win');
+  } else if (pScore < dScore) {
+    endRound('lose');
+  } else {
+    endRound('draw');
+  }
+}
+
+// 가상 참여자 및 딜러 차례 순차 실행
+function runAIAndDealerTurns() {
+  // 동료 꾼 갑: 16점 미만이면 무조건 히트
+  while (calculateScore(ai1Hand) < 16) {
+    ai1Hand.push(deck.pop());
+  }
+  // 동료 꾼 을: 17점 미만이면 무조건 히트
+  while (calculateScore(ai2Hand) < 17) {
+    ai2Hand.push(deck.pop());
+  }
+  // 물주 (딜러): 17점 미만이면 무조건 히트
+  while (calculateScore(dealerHand) < 17) {
+    dealerHand.push(deck.pop());
+  }
+  renderHands(false);
+}
+
+function endRound(result) {
+  isRoundActive = false;
+  renderHands(false);
+
+  const msgEl = document.getElementById('result-message');
+  let resultKorean = '무승부';
+  
+  if (result === 'win') {
+    msgEl.innerText = `판정 승리! (+${currentBet}냥)`;
+    msgEl.className = "result-overlay win";
+    resultKorean = '승리';
+  } else if (result === 'lose') {
+    msgEl.innerText = `판정 패배... (-${currentBet}냥)`;
+    msgEl.className = "result-overlay lose";
+    resultKorean = '패배';
+  } else {
+    msgEl.innerText = "비겼소 (무승부)";
+    msgEl.className = "result-overlay draw";
+  }
+
+  document.getElementById('btn-deal').style.display = 'block';
+  document.getElementById('btn-deal').innerText = '다음 판 하기';
+  document.getElementById('btn-hit').style.display = 'none';
+  document.getElementById('btn-stand').style.display = 'none';
+  document.getElementById('betting-zone').style.opacity = 1;
+
+  // === [연동] 통합 공용 장부 전송 규칙 ===
+  try {
+    let unifiedLogs = JSON.parse(localStorage.getItem('joseon_arcade_unified_logs') || '[]');
+    const now = new Date();
+    const timeStr = `${now.getMonth()+1}/${now.getDate()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    
+    const pScore = calculateScore(playerHand);
+    const a1Score = calculateScore(ai1Hand);
+    const a2Score = calculateScore(ai2Hand);
+    const dScore = calculateScore(dealerHand);
+
+    // 요청하신 대로 결과는 '경합 종료'로 고정, 세부 내용에 상세 스코어와 판정 기록
+    unifiedLogs.unshift({
+      game: "조선 블랙잭",
+      time: timeStr,
+      result: "경합 종료", 
+      detail: `내 결과: ${resultKorean}(${pScore}점) | 갑: ${a1Score}점, 을: ${a2Score}점 | 물주: ${dScore}점 (판돈 ${currentBet}냥)`
+    });
+    
+    if (unifiedLogs.length > 40) unifiedLogs = unifiedLogs.slice(0, 40);
+    localStorage.setItem('joseon_arcade_unified_logs', JSON.stringify(unifiedLogs));
+  } catch(e) {
+    console.error("통합 장부 기록 전송 실패:", e);
+  }
+}
+</script>
+</body>
+</html>
