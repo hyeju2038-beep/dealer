@@ -254,7 +254,8 @@ body {
 
 <div class="controls">
   <div class="betting-zone" id="betting-zone">
-    <div class="bet-info">기본 판돈: <span id="current-bet" style="color:var(--gold-light)">10</span> 냥</div>
+    <!-- 화면 표시부에 한도 표시 추가 -->
+    <div class="bet-info">기본 판돈: <span id="current-bet" style="color:var(--gold-light)">10</span> 냥 (최대 100냥)</div>
     <div class="bet-buttons">
       <button class="btn-bet" onclick="changeBet(5)">+5냥</button>
       <button class="btn-bet" onclick="changeBet(10)">+10냥</button>
@@ -282,8 +283,13 @@ const suits = ['♠', '◆', '♥', '♣'];
 const suitNames = { '♠': 'black', '◆': 'red', '♥': 'red', '♣': 'black' };
 const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
 
+// 베팅 100냥 한도 적용 제한 로직 수정
 function changeBet(amt) {
   if (isRoundActive) return;
+  if (currentBet + amt > 100) {
+    alert("주막 법도상 판돈은 최대 100냥까지만 걸 수 있소!");
+    return;
+  }
   currentBet += amt;
   document.getElementById('current-bet').innerText = currentBet;
 }
@@ -334,7 +340,6 @@ function startRound() {
   createDeck();
   shuffleDeck();
 
-  // 모든 참여자에게 2장씩 분배
   playerHand = [deck.pop(), deck.pop()];
   ai1Hand = [deck.pop(), deck.pop()];
   ai2Hand = [deck.pop(), deck.pop()];
@@ -358,28 +363,24 @@ function startRound() {
 }
 
 function renderHands(hideDealer) {
-  // 1. 나 (플레이어) 패 그리기
   const playerZone = document.getElementById('player-cards');
   playerZone.innerHTML = '';
   playerHand.forEach(card => playerZone.appendChild(createCardUI(card)));
   const pScore = calculateScore(playerHand);
   document.getElementById('player-score-display').innerText = pScore + '점' + (pScore > 21 ? ' (파산)' : '');
 
-  // 2. 동료 꾼 갑 패 그리기
   const ai1Zone = document.getElementById('ai1-cards');
   ai1Zone.innerHTML = '';
   ai1Hand.forEach(card => ai1Zone.appendChild(createCardUI(card)));
   const a1Score = calculateScore(ai1Hand);
   document.getElementById('ai1-score-display').innerText = a1Score + '점' + (a1Score > 21 ? ' (파산)' : '');
 
-  // 3. 동료 꾼 을 패 그리기
   const ai2Zone = document.getElementById('ai2-cards');
   ai2Zone.innerHTML = '';
   ai2Hand.forEach(card => ai2Zone.appendChild(createCardUI(card)));
   const a2Score = calculateScore(ai2Hand);
   document.getElementById('ai2-score-display').innerText = a2Score + '점' + (a2Score > 21 ? ' (파산)' : '');
 
-  // 4. 물주 패 그리기
   const dealerZone = document.getElementById('dealer-cards');
   dealerZone.innerHTML = '';
   dealerHand.forEach((card, idx) => {
@@ -419,7 +420,6 @@ function hit() {
   renderHands(true);
 
   if (calculateScore(playerHand) > 21) {
-    // 플레이어 파산 시에도 다른 AI 참여자들과 딜러는 패를 마저 완성시킴
     runAIAndDealerTurns();
     endRound('lose');
   }
@@ -446,17 +446,13 @@ function stand() {
   }
 }
 
-// 가상 참여자 및 딜러 차례 순차 실행
 function runAIAndDealerTurns() {
-  // 동료 꾼 갑: 16점 미만이면 무조건 히트
   while (calculateScore(ai1Hand) < 16) {
     ai1Hand.push(deck.pop());
   }
-  // 동료 꾼 을: 17점 미만이면 무조건 히트
   while (calculateScore(ai2Hand) < 17) {
     ai2Hand.push(deck.pop());
   }
-  // 물주 (딜러): 17점 미만이면 무조건 히트
   while (calculateScore(dealerHand) < 17) {
     dealerHand.push(deck.pop());
   }
@@ -489,7 +485,6 @@ function endRound(result) {
   document.getElementById('btn-stand').style.display = 'none';
   document.getElementById('betting-zone').style.opacity = 1;
 
-  // === [연동] 통합 공용 장부 전송 규칙 ===
   try {
     let unifiedLogs = JSON.parse(localStorage.getItem('joseon_arcade_unified_logs') || '[]');
     const now = new Date();
@@ -500,7 +495,6 @@ function endRound(result) {
     const a2Score = calculateScore(ai2Hand);
     const dScore = calculateScore(dealerHand);
 
-    // 요청하신 대로 결과는 '경합 종료'로 고정, 세부 내용에 상세 스코어와 판정 기록
     unifiedLogs.unshift({
       game: "조선 블랙잭",
       time: timeStr,
