@@ -1,1657 +1,299 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>인디언 포-카</title>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg-dark: #0d0a06;
-      --bg-mid: #1a1208;
-      --wood-dark: #2c1a0a;
-      --wood-mid: #3d2510;
-      --wood-light: #5c3a1e;
-      --wood-highlight: #7a4e28;
-      --gold: #c8941a;
-      --gold-light: #f0c040;
-      --gold-pale: #fae08a;
-      --red: #8b1a1a;
-      --red-bright: #c0392b;
-      --cream: #f5e6c8;
-      --parchment: #e8d4a0;
-      --ink: #1a0f05;
-      --ember: #ff6b1a;
-      --ember-glow: rgba(255,107,26,0.15);
-      --jade: #2d6a4f;
-      --jade-light: #40916c;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>조선 명가 오락 주막</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-dark: #0d0a06;
+  --bg-mid: #1a1208;
+  --wood-dark: #2c1a0a;
+  --wood-mid: #3d2510;
+  --wood-light: #5c3a1e;
+  --wood-highlight: #7a4e28;
+  --gold: #c8941a;
+  --gold-light: #f0c040;
+  --gold-pale: #fae08a;
+  --red: #8b1a1a;
+  --red-bright: #c0392b;
+  --cream: #f5e6c8;
+  --parchment: #e8d4a0;
+  --ink: #1a0f05;
+}
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-    html, body {
-      width: 100%; min-height: 100vh;
-      background: var(--bg-dark);
-      font-family: 'Noto Serif KR', serif;
-      overflow-x: hidden;
-    }
-
-    /* ── JOSEON BACKGROUND ── */
-    body::before {
-      content: '';
-      position: fixed; inset: 0; z-index: 0;
-      background:
-        radial-gradient(ellipse at 50% 0%, rgba(255,120,30,0.18) 0%, transparent 55%),
-        radial-gradient(ellipse at 20% 80%, rgba(180,80,10,0.10) 0%, transparent 40%),
-        radial-gradient(ellipse at 80% 70%, rgba(140,60,5,0.08) 0%, transparent 35%),
-        linear-gradient(180deg, #0d0a06 0%, #150d05 40%, #1a1208 100%);
-    }
-
-    /* Lattice window pattern overlay */
-    body::after {
-      content: '';
-      position: fixed; inset: 0; z-index: 0; pointer-events: none;
-      background-image:
-        repeating-linear-gradient(0deg, transparent, transparent 59px, rgba(200,148,26,0.04) 60px),
-        repeating-linear-gradient(90deg, transparent, transparent 59px, rgba(200,148,26,0.04) 60px);
-      background-size: 60px 60px;
-    }
-
-    /* ── HORONGBUL (LANTERN) GLOW ── */
-    .lantern-glow {
-      position: fixed;
-      top: -80px; left: 50%; transform: translateX(-50%);
-      width: 300px; height: 300px;
-      background: radial-gradient(circle, rgba(255,140,40,0.25) 0%, rgba(255,100,20,0.10) 40%, transparent 70%);
-      pointer-events: none; z-index: 1;
-      animation: flicker 3s ease-in-out infinite;
-    }
-
-    @keyframes flicker {
-      0%,100% { opacity: 1; transform: translateX(-50%) scale(1); }
-      33% { opacity: 0.85; transform: translateX(-50%) scale(1.05); }
-      66% { opacity: 0.95; transform: translateX(-50%) scale(0.97); }
-    }
-
-    /* ── FALLING PETALS ── */
-    .petal-container {
-      position: fixed; inset: 0; pointer-events: none; z-index: 2; overflow: hidden;
-    }
-
-    .petal {
-      position: absolute;
-      top: -30px;
-      width: 10px; height: 14px;
-      border-radius: 50% 0 50% 0;
-      opacity: 0;
-      animation: fall linear infinite;
-    }
-
-    @keyframes fall {
-      0%   { opacity: 0; transform: translateX(0) rotate(0deg) scale(0.8); }
-      10%  { opacity: 0.7; }
-      90%  { opacity: 0.5; }
-      100% { opacity: 0; transform: translateX(var(--drift)) translateY(110vh) rotate(var(--spin)) scale(0.6); }
-    }
-
-    /* ── CONTAINER ── */
-    .container {
-      position: relative; z-index: 10;
-      max-width: 680px; margin: 0 auto;
-      padding: 16px 12px 32px;
-      min-height: 100vh;
-    }
-
-    /* ── SCREEN ── */
-    .screen { display: none; }
-    .screen.active { display: block; }
-
-    /* ── TITLE ── */
-    .game-title {
-      font-family: 'Noto Serif KR', serif;
-      font-size: 44px; font-weight: 900;
-      color: var(--gold-light);
-      text-align: center;
-      letter-spacing: 6px;
-      text-shadow:
-        0 0 30px rgba(240,192,64,0.6),
-        0 0 60px rgba(240,192,64,0.3),
-        2px 4px 0 rgba(0,0,0,0.8),
-        0 2px 0 #7a4000;
-      padding: 20px 0 4px;
-      position: relative;
-    }
-
-    .game-title::before, .game-title::after {
-      content: '◈';
-      color: var(--red);
-      font-size: 18px;
-      vertical-align: middle;
-      margin: 0 12px;
-      text-shadow: 0 0 10px rgba(192,57,43,0.8);
-    }
-
-    .subtitle {
-      text-align: center;
-      color: var(--parchment);
-      font-size: 13px;
-      letter-spacing: 3px;
-      opacity: 0.7;
-      padding-bottom: 12px;
-    }
-
-    /* ── DECORATIVE DIVIDER ── */
-    .divider {
-      text-align: center;
-      color: var(--gold);
-      font-size: 20px;
-      letter-spacing: 8px;
-      opacity: 0.5;
-      margin: 8px 0;
-    }
-
-    /* ── PANEL ── */
-    .panel {
-      background:
-        linear-gradient(135deg, rgba(60,30,10,0.95) 0%, rgba(40,20,8,0.98) 100%);
-      border: 1px solid rgba(200,148,26,0.3);
-      border-radius: 8px;
-      padding: 16px;
-      margin: 10px 0;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .panel::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0; height: 1px;
-      background: linear-gradient(90deg, transparent, var(--gold), transparent);
-    }
-
-    .panel-title {
-      font-size: 13px;
-      color: var(--gold);
-      letter-spacing: 2px;
-      margin-bottom: 12px;
-      text-align: center;
-    }
-
-    label {
-      display: block;
-      color: var(--parchment);
-      font-size: 13px;
-      margin-bottom: 6px;
-      letter-spacing: 1px;
-    }
-
-    select, input[type=text] {
-      width: 100%;
-      background: rgba(20,10,3,0.9);
-      border: 1px solid rgba(200,148,26,0.4);
-      color: var(--cream);
-      padding: 9px 12px;
-      border-radius: 4px;
-      font-family: 'Noto Serif KR', serif;
-      font-size: 14px;
-      outline: none;
-      margin-bottom: 10px;
-    }
-
-    select:focus, input[type=text]:focus {
-      border-color: var(--gold);
-      box-shadow: 0 0 8px rgba(200,148,26,0.3);
-    }
-
-    /* ── PLAYER INPUT ROW ── */
-    .player-input-row {
-      display: flex; gap: 6px; align-items: center; margin-bottom: 8px;
-    }
-
-    .player-input-row input { margin-bottom: 0; flex: 1; }
-
-    .load-player-select {
-      width: auto; flex: 0 0 100px; margin-bottom: 0; font-size: 12px; padding: 9px 6px;
-    }
-
-    .saved-chip-pill {
-      flex: 0 0 auto;
-      background: rgba(200,148,26,0.2);
-      border: 1px solid rgba(200,148,26,0.5);
-      color: var(--gold-light);
-      padding: 4px 8px;
-      border-radius: 20px;
-      font-size: 11px;
-      white-space: nowrap;
-    }
-
-    .saved-chip-pill.empty {
-      background: rgba(80,40,10,0.3);
-      border-color: rgba(100,60,20,0.4);
-      color: rgba(200,160,80,0.4);
-    }
-
-    /* ── BUTTONS ── */
-    .btn-row {
-      display: flex; gap: 10px; justify-content: center;
-      margin: 12px 0;
-      flex-wrap: wrap;
-    }
-
-    .btn {
-      font-family: 'Noto Serif KR', serif;
-      font-size: 15px;
-      font-weight: 700;
-      padding: 13px 28px;
-      border: none; border-radius: 4px;
-      cursor: pointer;
-      letter-spacing: 2px;
-      transition: all 0.15s;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .btn::after {
-      content: '';
-      position: absolute; inset: 0;
-      background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, transparent 50%);
-    }
-
-    .btn-gold {
-      background: linear-gradient(180deg, #c8941a 0%, #8a5e0a 60%, #6b4508 100%);
-      color: var(--cream);
-      border: 1px solid #c8941a;
-      box-shadow: 0 2px 0 #3d2000, 0 4px 12px rgba(200,148,26,0.3);
-    }
-
-    .btn-gold:hover {
-      background: linear-gradient(180deg, #f0c040 0%, #c8941a 60%, #8a5e0a 100%);
-      transform: translateY(-1px);
-      box-shadow: 0 3px 0 #3d2000, 0 6px 18px rgba(200,148,26,0.5);
-    }
-
-    .btn-gold:active { transform: translateY(1px); box-shadow: 0 1px 0 #3d2000; }
-
-    .btn-ghost {
-      background: rgba(60,30,10,0.7);
-      color: var(--parchment);
-      border: 1px solid rgba(200,148,26,0.4);
-    }
-
-    .btn-ghost:hover { border-color: var(--gold); color: var(--gold-light); }
-
-    .btn-red {
-      background: linear-gradient(180deg, #8b1a1a 0%, #5a0e0e 100%);
-      color: var(--cream);
-      border: 1px solid #8b1a1a;
-      box-shadow: 0 2px 0 #300, 0 4px 12px rgba(139,26,26,0.3);
-    }
-
-    .btn-red:hover {
-      background: linear-gradient(180deg, #c0392b 0%, #8b1a1a 100%);
-      transform: translateY(-1px);
-    }
-
-    /* ── READY SCREEN ── */
-    .ready-box { text-align: center; padding: 32px 20px; }
-    .ready-title { font-size: 26px; color: var(--gold-light); margin-bottom: 12px; letter-spacing: 3px; }
-    .ready-msg { color: var(--parchment); font-size: 15px; margin-bottom: 16px; }
-    .ready-warning {
-      font-size: 12px; color: var(--ember);
-      background: rgba(255,107,26,0.1);
-      border: 1px solid rgba(255,107,26,0.3);
-      padding: 8px 16px; border-radius: 4px;
-      margin-bottom: 20px; letter-spacing: 1px;
-    }
-
-    /* ══════════════════════════════════════════════════
-       POKER TABLE — WOODEN ROUND TABLE
-    ══════════════════════════════════════════════════ */
-    .poker-table-wrap {
-      position: relative;
-      width: 100%;
-      padding-top: 18px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    /* Outer wooden rim */
-    .poker-table-outer {
-      position: relative;
-      width: min(520px, 94vw);
-      height: min(520px, 94vw);
-      margin: 0 auto;
-      border-radius: 50%;
-      background:
-        conic-gradient(
-          from 0deg,
-          #5c3a1e 0deg, #7a4e28 30deg, #4a2c0e 60deg, #6b3d1a 90deg,
-          #8a5530 120deg, #4a2c0e 150deg, #7a4e28 180deg, #5c3a1e 210deg,
-          #6b3d1a 240deg, #8a5530 270deg, #4a2c0e 300deg, #7a4e28 330deg,
-          #5c3a1e 360deg
-        );
-      box-shadow:
-        0 0 0 6px #3d2510,
-        0 0 0 10px #5c3a1e,
-        0 0 0 14px #2c1a0a,
-        0 20px 60px rgba(0,0,0,0.8),
-        0 0 80px rgba(255,120,30,0.12),
-        inset 0 0 40px rgba(0,0,0,0.5);
-    }
-
-    /* Wood grain effect */
-    .poker-table-outer::before {
-      content: '';
-      position: absolute; inset: 0;
-      border-radius: 50%;
-      background:
-        repeating-linear-gradient(
-          15deg,
-          transparent 0px, transparent 8px,
-          rgba(255,255,255,0.015) 8px, rgba(255,255,255,0.015) 10px
-        ),
-        repeating-linear-gradient(
-          -15deg,
-          transparent 0px, transparent 12px,
-          rgba(0,0,0,0.04) 12px, rgba(0,0,0,0.04) 14px
-        );
-    }
-
-    /* Inner felt area */
-    .poker-table-inner {
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      width: 68%;
-      height: 68%;
-      border-radius: 50%;
-      background:
-        radial-gradient(ellipse at 40% 35%, #2d6a4f 0%, #1e4a38 50%, #142d22 100%);
-      box-shadow:
-        inset 0 4px 20px rgba(0,0,0,0.6),
-        inset 0 0 40px rgba(0,0,0,0.4),
-        0 0 0 4px rgba(0,0,0,0.4),
-        0 0 20px rgba(0,0,0,0.3);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-    }
-
-    .table-label {
-      font-size: 10px; color: rgba(200,220,180,0.5);
-      letter-spacing: 1.5px; text-align: center;
-      padding: 0 10px; line-height: 1.4;
-    }
-
-    .table-cards-ring {
-      display: flex; flex-wrap: wrap;
-      justify-content: center; align-items: center;
-      gap: 6px; padding: 6px;
-    }
-
-    .pot-display {
-      display: flex; align-items: center; gap: 5px;
-      background: rgba(0,0,0,0.35);
-      border: 1px solid rgba(200,148,26,0.3);
-      border-radius: 20px;
-      padding: 4px 12px;
-      font-size: 12px; color: var(--gold-light);
-    }
-
-    .pot-icon { font-size: 14px; }
-    .pot-unit { font-size: 11px; color: rgba(200,148,26,0.6); }
-    .pot-amount { font-weight: 700; font-size: 16px; }
-
-    /* ── PLAYER CARD SLOTS around table ring ── */
-    .player-ring-slots {
-      position: absolute; inset: 0;
-      overflow: visible;
-    }
-
-    .player-slot {
-      position: absolute;
-      transform: translate(-50%, -50%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: visible;
-      z-index: 10;
-    }
-
-    .player-slot .player-label {
-      font-size: 10px; color: var(--parchment);
-      background: rgba(20,10,3,0.8);
-      padding: 2px 6px; border-radius: 10px;
-      border: 1px solid rgba(200,148,26,0.3);
-      white-space: nowrap;
-      letter-spacing: 0.5px;
-      text-align: center;
-      max-width: 70px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-
-    .player-main {
+body {
+  background-color: var(--bg-dark);
+  background-image: radial-gradient(circle at center, var(--bg-mid) 0%, var(--bg-dark) 100%);
+  color: var(--cream);
+  font-family: 'Noto Sans KR', sans-serif;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 3px;
+  padding: 40px 20px;
 }
 
-    .player-main .table-card-info {
-      justify-content: center;
-      flex-wrap: wrap;
-      max-width: 90px;
-      min-height: 13px;
-    }
+h1, h2, h3 {
+  font-family: 'Noto Serif KR', serif;
+}
 
-    /* ── PLAYING CARD ── */
-    .playing-card {
-      width: 44px; height: 62px;
-      background: linear-gradient(135deg, #f8f0e0 0%, #ede0c0 100%);
-      border: 2px solid rgba(139,26,26,0.6);
-      border-radius: 5px;
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Noto Serif KR', serif;
-      font-size: 22px; font-weight: 900;
-      color: var(--red);
-      box-shadow:
-        2px 3px 8px rgba(0,0,0,0.6),
-        inset 0 1px 0 rgba(255,255,255,0.5);
-      position: relative;
-      cursor: default;
-    }
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+  border-bottom: 2px double var(--gold);
+  padding-bottom: 20px;
+  width: 100%;
+  max-width: 800px;
+}
 
-    .playing-card::before {
-      content: '';
-      position: absolute;
-      inset: 3px;
-      border: 1px solid rgba(139,26,26,0.2);
-      border-radius: 2px;
-    }
+.header h1 {
+  font-size: 2.5rem;
+  color: var(--gold-light);
+  text-shadow: 0 4px 8px rgba(0,0,0,0.7);
+  letter-spacing: 2px;
+}
 
-    .folded-card {
-      background: linear-gradient(135deg, #2a1a0a 0%, #1a0d05 100%) !important;
-      color: rgba(200,148,26,0.5) !important;
-      font-size: 10px !important;
-      border-color: rgba(100,60,20,0.4) !important;
-    }
+.header p {
+  font-size: 1rem;
+  color: var(--parchment);
+  margin-top: 8px;
+  opacity: 0.8;
+}
 
-    .table-card-info {
-      display: flex; gap: 4px;
-      font-size: 9px;
-    }
+.game-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 25px;
+  width: 100%;
+  max-width: 800px;
+  margin-bottom: 50px;
+}
 
-    .tci-bet {
-      background: rgba(200,148,26,0.2);
-      color: var(--gold-light);
-      padding: 1px 4px; border-radius: 3px;
-    }
+.game-card {
+  background: linear-gradient(135deg, var(--wood-mid) 0%, var(--wood-dark) 100%);
+  border: 3px solid var(--wood-light);
+  border-radius: 8px;
+  padding: 30px 20px;
+  text-align: center;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+  cursor: pointer;
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
 
-    .tci-chips {
-      background: rgba(45,106,79,0.3);
-      color: #74c69d;
-      padding: 1px 4px; border-radius: 3px;
-    }
+.game-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--gold);
+  box-shadow: 0 15px 30px rgba(200, 148, 26, 0.2);
+}
 
-    .tci-fold {
-      background: rgba(139,26,26,0.3);
-      color: #e07070;
-      padding: 1px 4px; border-radius: 3px;
-    }
+.game-card h2 {
+  color: var(--gold-pale);
+  font-size: 1.5rem;
+  margin-bottom: 12px;
+}
 
-    /* ── SAKE CUP (술잔) ── */
-    .sake-cup {
-      width: 28px; height: 28px;
-      cursor: pointer;
-      transition: transform 0.2s;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
-      position: absolute;
-      right: -32px;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 11;
-    }
+.game-card p {
+  color: var(--cream);
+  font-size: 0.9rem;
+  opacity: 0.75;
+  line-height: 1.4;
+  margin-bottom: 20px;
+}
 
-    .sake-cup:hover { transform: scale(1.15); filter: drop-shadow(0 0 6px rgba(255,180,80,0.6)) drop-shadow(0 2px 4px rgba(0,0,0,0.6)); }
-    .sake-cup:active { transform: scale(0.9); }
+.btn-play {
+  background: var(--wood-highlight);
+  color: var(--gold-pale);
+  border: 1px solid var(--gold);
+  padding: 8px 20px;
+  font-weight: bold;
+  border-radius: 4px;
+  font-family: 'Noto Serif KR', serif;
+  transition: background 0.2s;
+}
 
-    .sake-cup svg { width: 100%; height: 100%; }
+.game-card:hover .btn-play {
+  background: var(--gold);
+  color: var(--ink);
+}
 
-    /* Throw animation */
-    @keyframes throwCup {
-      0%   { transform: translate(0,0) rotate(0deg) scale(1); opacity: 1; }
-      50%  { transform: translate(var(--tx), var(--ty)) rotate(180deg) scale(1.3); opacity: 0.9; }
-      80%  { transform: translate(var(--tx2), var(--ty2)) rotate(300deg) scale(0.7); opacity: 0.6; }
-      100% { transform: translate(var(--tx3), var(--ty3)) rotate(360deg) scale(0.3); opacity: 0; }
-    }
+.log-section {
+  width: 100%;
+  max-width: 800px;
+  background: var(--parchment);
+  color: var(--ink);
+  border-radius: 6px;
+  padding: 25px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+  border: 4px double var(--wood-dark);
+}
 
-    .cup-throwing {
-      animation: throwCup 0.8s ease-in forwards;
-      pointer-events: none;
-    }
+.log-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
 
-    /* Water splash in center */
-    .splash-container {
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      pointer-events: none;
-      z-index: 20;
-    }
+.log-header h2 {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
 
-    .splash-drop {
-      position: absolute;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(180,220,255,0.9) 0%, rgba(100,160,220,0.5) 60%, transparent 100%);
-      animation: splashDrop 0.8s ease-out forwards;
-    }
+.btn-clear {
+  background: var(--red);
+  color: white;
+  border: none;
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  border-radius: 3px;
+  cursor: pointer;
+}
 
-    @keyframes splashDrop {
-      0% { width: 4px; height: 4px; opacity: 1; top: 0; left: 0; }
-      100% { width: 40px; height: 40px; opacity: 0; top: -20px; left: -20px; }
-    }
+.btn-clear:hover { background: var(--red-bright); }
 
-    .splash-wave {
-      position: absolute;
-      border: 2px solid rgba(150,200,255,0.7);
-      border-radius: 50%;
-      animation: splashWave 1.2s ease-out forwards;
-    }
+.log-table-container {
+  max-height: 300px;
+  overflow-y: auto;
+}
 
-    @keyframes splashWave {
-      0% { width: 10px; height: 10px; top: -5px; left: -5px; opacity: 0.8; }
-      100% { width: 120px; height: 120px; top: -60px; left: -60px; opacity: 0; }
-    }
+.log-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
 
-    .water-overflow {
-      position: absolute;
-      border-radius: 50%;
-      background: rgba(140,200,255,0.3);
-      animation: waterOverflow 1.5s ease-out forwards;
-    }
+.log-table th, .log-table td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid rgba(26, 15, 5, 0.15);
+}
 
-    @keyframes waterOverflow {
-      0% { width: 20px; height: 20px; top: -10px; left: -10px; opacity: 0.7; }
-      100% { width: 80px; height: 30px; top: 10px; left: -40px; opacity: 0; }
-    }
+.log-table th {
+  font-family: 'Noto Serif KR', serif;
+  font-weight: bold;
+  background: rgba(0, 0, 0, 0.05);
+}
 
-    /* ── INFO ROW ── */
-    .info-row {
-      display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
-    }
+.badge {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: #fff;
+}
+.badge.win { background-color: #2d6a4f; }
+.badge.lose { background-color: var(--red); }
+.badge.draw { background-color: #555; }
 
-    .info-chip {
-      background: rgba(20,10,3,0.8);
-      border: 1px solid rgba(200,148,26,0.3);
-      padding: 8px 14px; border-radius: 4px;
-      color: var(--parchment); font-size: 14px;
-      flex: 1; text-align: center; min-width: 140px;
-    }
-
-    .highlight { color: var(--gold-light); font-weight: 700; }
-
-    /* ── COIN ROW (Joseon currency chips) ── */
-    .coin-row {
-      display: flex; gap: 10px; justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .coin {
-      width: 66px; height: 66px;
-      cursor: pointer;
-      position: relative;
-      transition: transform 0.15s;
-      display: flex; align-items: center; justify-content: center;
-    }
-
-    .coin:hover { transform: scale(1.1); }
-    .coin:active { transform: scale(0.93); }
-
-    /* Joseon coin SVG drawn via CSS */
-    .coin-inner {
-      width: 62px; height: 62px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 35% 30%, #f0c040, #c8941a 50%, #8a5e0a);
-      box-shadow:
-        0 3px 0 #5a3500,
-        0 5px 12px rgba(0,0,0,0.5),
-        inset 0 2px 4px rgba(255,255,255,0.25),
-        inset 0 -2px 4px rgba(0,0,0,0.3);
-      display: flex; align-items: center; justify-content: center;
-      position: relative;
-      border: 2px solid #8a5e0a;
-    }
-
-    /* Square hole in center (엽전) */
-    .coin-inner::before {
-      content: '';
-      position: absolute;
-      width: 16px; height: 16px;
-      background: var(--bg-dark);
-      border-radius: 2px;
-      box-shadow: inset 0 1px 3px rgba(0,0,0,0.8);
-    }
-
-    .coin-inner::after {
-      content: attr(data-label);
-      position: absolute;
-      bottom: 6px;
-      font-size: 11px;
-      font-weight: 900;
-      color: var(--ink);
-      font-family: 'Noto Serif KR', serif;
-      text-shadow: 0 1px 0 rgba(255,200,50,0.4);
-    }
-
-    .coin-label {
-      position: absolute;
-      bottom: -18px;
-      font-size: 10px;
-      color: var(--gold);
-      letter-spacing: 1px;
-      white-space: nowrap;
-    }
-
-    .raise-display {
-      text-align: center;
-      color: var(--gold-light);
-      font-size: 14px;
-      margin-top: 14px;
-      letter-spacing: 1px;
-    }
-
-    /* ── RESULT SCREEN ── */
-    .result-header { text-align: center; padding: 10px 0; }
-    .result-title {
-      font-size: 30px; color: var(--gold-light);
-      letter-spacing: 4px;
-      text-shadow: 0 0 20px rgba(240,192,64,0.5);
-    }
-
-    .section-label {
-      font-size: 12px; color: var(--gold);
-      letter-spacing: 2px; margin-bottom: 12px;
-      text-align: center;
-    }
-
-    .result-cards-row {
-      display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
-    }
-
-    .result-card-slot {
-      display: flex; flex-direction: column;
-      align-items: center; gap: 5px;
-    }
-
-    .player-label {
-      font-size: 11px; color: var(--parchment);
-      letter-spacing: 0.5px; text-align: center;
-    }
-
-    .result-playing-card {
-      width: 52px; height: 74px;
-      background: linear-gradient(135deg, #f8f0e0, #ede0c0);
-      border: 2px solid rgba(139,26,26,0.6);
-      border-radius: 6px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 26px; font-weight: 900;
-      color: var(--red);
-      box-shadow: 2px 3px 10px rgba(0,0,0,0.6);
-      position: relative;
-    }
-
-    .winner-card {
-      border-color: var(--gold) !important;
-      box-shadow: 0 0 16px rgba(200,148,26,0.8), 2px 3px 10px rgba(0,0,0,0.6) !important;
-    }
-
-    .folded-result {
-      background: linear-gradient(135deg, #2a1a0a, #1a0d05) !important;
-      color: rgba(200,148,26,0.4) !important;
-      font-size: 11px !important;
-      border-color: rgba(80,40,10,0.4) !important;
-    }
-
-    .fold-badge {
-      font-size: 8px; color: var(--red-bright);
-      background: rgba(139,26,26,0.3);
-      border: 1px solid rgba(139,26,26,0.5);
-      padding: 1px 4px; border-radius: 2px;
-    }
-
-    /* ── RANKING TABLE ── */
-    .ranking-table {
-      width: 100%; border-collapse: collapse;
-      font-size: 13px;
-    }
-
-    .ranking-table th {
-      color: var(--gold);
-      font-size: 11px; letter-spacing: 1px;
-      padding: 6px 4px; border-bottom: 1px solid rgba(200,148,26,0.3);
-      font-weight: 400;
-    }
-
-    .ranking-table td {
-      padding: 8px 4px;
-      color: var(--parchment);
-      border-bottom: 1px solid rgba(200,148,26,0.08);
-      text-align: center;
-    }
-
-    .winner-row { background: rgba(200,148,26,0.08); }
-
-    .rank-badge {
-      display: inline-block;
-      width: 26px; height: 26px; line-height: 26px;
-      border-radius: 50%;
-      background: rgba(60,30,10,0.8);
-      border: 1px solid rgba(200,148,26,0.3);
-      font-size: 12px; font-weight: 700; color: var(--parchment);
-      text-align: center;
-    }
-
-    .rank-1 { background: linear-gradient(135deg, #c8941a, #8a5e0a); color: #fff; border-color: #f0c040; }
-    .rank-2 { background: linear-gradient(135deg, #708090, #4a5560); color: #fff; }
-    .rank-3 { background: linear-gradient(135deg, #8b5e3c, #5c3a1e); color: #fff; }
-
-    .delta-pos { color: #74c69d; font-weight: 700; }
-    .delta-neg { color: #e07070; font-weight: 700; }
-    .delta-zero { color: var(--parchment); }
-
-    .save-cell { text-align: center; }
-
-    .save-btn {
-      font-size: 10px; padding: 3px 8px;
-      border-radius: 3px; cursor: pointer;
-      font-family: 'Noto Serif KR', serif;
-      margin: 0 2px;
-      transition: all 0.15s;
-      border: 1px solid transparent;
-    }
-
-    .keep-btn { background: rgba(40,80,40,0.4); color: #74c69d; border-color: rgba(100,180,100,0.3); }
-    .del-btn  { background: rgba(80,20,20,0.4); color: #e07070; border-color: rgba(180,60,60,0.3); }
-    .active-keep { background: rgba(40,180,80,0.3); border-color: #74c69d; }
-    .active-del  { background: rgba(180,40,40,0.4); border-color: #e07070; }
-
-
-
-    /* ── RESPONSIVE CARD SIZE BY PLAYER COUNT ── */
-    .poker-table-outer.size-small .playing-card {
-      width: 44px;
-      height: 62px;
-      font-size: 22px;
-    }
-
-    .poker-table-outer.size-medium .playing-card {
-      width: 48px;
-      height: 68px;
-      font-size: 24px;
-    }
-
-    .poker-table-outer.size-large .playing-card {
-      width: 58px;
-      height: 80px;
-      font-size: 27px;
-    }
-
-    /* ── TURN TITLE ── */
-    #turnTitle {
-      font-size: 28px; font-weight: 700;
-      color: var(--gold-light);
-      text-shadow: 0 0 20px rgba(240,192,64,0.4), 2px 3px 0 rgba(0,0,0,0.6);
-      letter-spacing: 2px;
-    }
-
-  </style>
+.no-log {
+  text-align: center;
+  padding: 30px;
+  color: #666;
+  font-style: italic;
+}
+</style>
 </head>
 <body>
 
-  <!-- Lantern glow -->
-  <div class="lantern-glow"></div>
+  <div class="header">
+    <h1>조선 명가 오락 주막</h1>
+    <p>세 가지의 격조 높은 경합을 한곳에서 즐겨보시게</p>
+    <p style="color: var(--gold-light); font-weight: bold; font-size: 1.2rem; margin-top: 15px;">현재 보유 재화: <span id="globalChipsDisplay"></span>냥</p>
+  </div>
 
-  <!-- Falling petals -->
-  <div class="petal-container" id="petalContainer"></div>
+  <div class="game-grid">
+    <a href="./indianpoker_js.html" class="game-card">
+      <h2>인디언 포-카</h2>
+      <p>상대의 패는 보이나 나의 패는 보이지 않는다. 오직 담력과 심리전으로 승부하는 전통 마작풍 경합.</p>
+      <span class="btn-play">입장하기</span>
+    </a>
+    
+    <a href="./indian_blackjack_js.html" class="game-card">
+      <h2>인디언 블랙잭</h2>
+      <p>인디언 포커의 규칙에 21점 블랙잭의 묘미를 결합하여 수 싸움을 한층 더 진화시킨 경합.</p>
+      <span class="btn-play">입장하기</span>
+    </a>
+    
+    <a href="./blackjack_js.html" class="game-card">
+      <h2>조선 블랙잭</h2>
+      <p>물주(딜러)와 겨루어 21점에 가장 가까운 자가 승리하는 가 장부 기반의 정통 타짜 경합.</p>
+      <span class="btn-play">입장하기</span>
+    </a>
+  </div>
 
-  <div class="container">
-
-    <!-- ══ START SCREEN ══ -->
-    <div id="startScreen" class="screen active">
-      <div class="game-title">인디언 포-카</div>
-      <div class="subtitle">2~10명 · 한 기기로 번갈아 플레이</div>
-      <div class="divider">✦ ◈ ✦</div>
-
-      <div class="panel">
-        <div class="panel-title">遊 戱 設 定</div>
-        <label for="playerCount">참여 인원</label>
-        <select id="playerCount" onchange="makeNameInputs()">
-          <option value="2">2명</option>
-          <option value="3">3명</option>
-          <option value="4">4명</option>
-          <option value="5">5명</option>
-          <option value="6">6명</option>
-          <option value="7">7명</option>
-          <option value="8">8명</option>
-          <option value="9">9명</option>
-          <option value="10">10명</option>
-        </select>
-        <div id="nameInputs"></div>
-      </div>
-5
-      <div class="btn-row">
-        <button class="btn btn-gold" onclick="startGame()">판 시작하기</button>
-      </div>
+  <div class="log-section">
+    <div class="log-header">
+      <h2>대통합 오락 장부 (최근 기록)</h2>
+      <button class="btn-clear" onclick="clearLogs()">장부 초기화</button>
     </div>
-
-    <!-- ══ READY SCREEN ══ -->
-    <div id="readyScreen" class="screen">
-      <div class="panel ready-box">
-        <div class="ready-title" id="readyTitle"></div>
-        <div class="ready-msg" id="readyMessage"></div>
-        <div class="ready-warning">📵 다른 분들은 화면을 보지 마시오</div>
-        <button class="btn btn-gold" onclick="showTurnScreen()">확인하기 →</button>
-      </div>
+    <div class="log-table-container">
+      <table class="log-table" id="logTable">
+        <thead>
+          <tr>
+            <th style="width: 25%;">경합 종류</th>
+            <th style="width: 20%;">일시</th>
+            <th style="width: 15%;">결과</th>
+            <th style="width: 40%;">상세 정보</th>
+          </tr>
+        </thead>
+        <tbody id="logBody">
+          </tbody>
+      </table>
     </div>
-
-    <!-- ══ TURN SCREEN ══ -->
-    <div id="turnScreen" class="screen">
-
-      <div style="text-align:center; padding: 38px 0 12px;">
-        <div id="turnTitle"></div>
-      </div>
-
-      <!-- 포커 테이블 (원형 나무 탁상) -->
-      <div class="poker-table-wrap">
-        <div class="poker-table-outer" id="pokerTableOuter">
-
-          <!-- Player card slots around the ring -->
-          <div class="player-ring-slots" id="playerRingSlots"></div>
-
-          <!-- Inner felt -->
-          <div class="poker-table-inner" id="pokerTableInner">
-            <div class="table-label">공유 카드판<br>나를 제외한 모든 패</div>
-            <div class="pot-display">
-              <span class="pot-icon">🪙</span>
-              <span class="pot-amount" id="potAmount">0</span>
-              <span class="pot-unit">냥 (판돈)</span>
-            </div>
-            <!-- Splash container for cup throw -->
-            <div class="splash-container" id="splashContainer"></div>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- 내 정보 -->
-      <div class="panel" style="margin-top:30px;">
-        <div class="info-row">
-          <div class="info-chip" id="myChipInfo">내 엽전: –</div>
-          <div class="info-chip" id="callInfo">–</div>
-        </div>
-      </div>
-
-      <!-- 레이즈 선택 -->
-      <div class="panel">
-        <div class="panel-title">賭 金 選 擇 (누를수록 누적)</div>
-        <div class="coin-row">
-          <div class="coin" onclick="addRaise(5)">
-            <div class="coin-inner" data-label="五"></div>
-            <div class="coin-label">+5냥</div>
-          </div>
-          <div class="coin" onclick="addRaise(10)">
-            <div class="coin-inner" data-label="十"></div>
-            <div class="coin-label">+10냥</div>
-          </div>
-          <div class="coin" onclick="addRaise(20)">
-            <div class="coin-inner" data-label="廿"></div>
-            <div class="coin-label">+20냥</div>
-          </div>
-        </div>
-        <div class="raise-display" id="selectedAmount" style="margin-top: 30px;">선택된 레이즈: 0냥</div>
-        <div class="btn-row" style="margin-top:14px;">
-          <button class="btn btn-ghost" onclick="clearRaise()">초기화</button>
-        </div>
-      </div>
-
-      <!-- 액션 버튼 -->
-      <div class="btn-row">
-        <button class="btn btn-gold" onclick="chooseAction('call')">따라가기 (Call)</button>
-        <button class="btn btn-gold" onclick="chooseAction('raise')">올리기 (Raise)</button>
-        <button class="btn btn-red" onclick="chooseAction('fold')">✖ 포기 (Fold)</button>
-      </div>
-
-    </div>
-
-    <!-- ══ RESULT SCREEN ══ -->
-    <div id="resultScreen" class="screen">
-      <div class="result-header">
-        <div class="game-title" style="font-size:28px; padding:12px 0 4px;">결 과 발 표</div>
-      </div>
-
-      <div class="panel">
-        <div class="section-label">공개된 패</div>
-        <div class="result-cards-row" id="resultCards"></div>
-        <div style="text-align:center; margin-top:12px; font-size:15px; font-weight:700; color:var(--gold-light);" id="winnerResult"></div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-title">🏆 이번 판 순위</div>
-        <table class="ranking-table">
-          <thead>
-            <tr>
-              <th>순위</th><th>패자</th><th>획득/손실</th><th>총 엽전</th><th>다음 참여</th>
-            </tr>
-          </thead>
-          <tbody id="rankingBody"></tbody>
-        </table>
-      </div>
-
-      <div class="btn-row">
-        <button class="btn btn-gold" onclick="goNextGame()">다음 판 시작 →</button>
-      </div>
-    </div>
-
-  </div><!-- /container -->
-
-  <script>
-    // ══════════════════════════════════════════
-    //  FALLING PETALS
-    // ══════════════════════════════════════════
-    (function initPetals() {
-      const container = document.getElementById('petalContainer');
-      const colors = ['#f9a8c9','#f7c5d5','#ffd4e8','#ffb6c1','#ff9eb5','#ffc8d9','#ffe4ee'];
-      const count = 22;
-
-      for (let i = 0; i < count; i++) {
-        const petal = document.createElement('div');
-        petal.className = 'petal';
-        const left = Math.random() * 100;
-        const duration = 6 + Math.random() * 10;
-        const delay = Math.random() * 12;
-        const drift = (Math.random() - 0.5) * 200;
-        const spin = (Math.random() - 0.5) * 720;
-        const size = 7 + Math.random() * 9;
-        const color = colors[Math.floor(Math.random() * colors.length)];
-
-        petal.style.cssText = `
-          left: ${left}%;
-          width: ${size}px; height: ${size * 1.4}px;
-          background: ${color};
-          animation-duration: ${duration}s;
-          animation-delay: ${delay}s;
-          --drift: ${drift}px;
-          --spin: ${spin}deg;
-          opacity: 0;
-        `;
-        container.appendChild(petal);
-      }
-    })();
-
-    // ══════════════════════════════════════════
-    //  GAME STATE
-    // ══════════════════════════════════════════
-    let players = [];
-    let currentPlayerIndex = 0;
-    let pot = 0;
-    let selectedRaiseTotal = 0;
-    let currentBet = 0;
-    let lastRaiseAmount = 0;
-    //가장 마지막으로 얼마를 올렸는지 그 금액 저장하는 메모장
-    const ANTE = 5;
-    //기본 참가비, let은 중간에 값을 바꿀 수 있지만, const는 고정된 값
-    let pendingPlayers = [];
-    //아직 결정을 내리지 않고 대기 중인 플레이어들의 명단
-    let chipsAtRoundStart = [];
-    //각 플레이어가 지갑에 얼마를 가지고 있었는지 적는 공간
-    let savedPlayers = [];
-    //새로고침을 누를 때마다 플레이어들의 이름과 남은 돈을 잃지 않게 저장
-    const SAVED_PLAYERS_KEY = 'indianPokerSavedPlayers';
-    //웹 브라우저 저장소에 데이터를 저장할 때 붙여두는 파일 이름
-
-    function loadSavedPlayersFromStorage() {
-      try {
-        //외부에서 데이터를 불러올 때는 파일이 깨져있을 수도 있음
-        const stored = localStorage.getItem(SAVED_PLAYERS_KEY);
-        //localStorage는 웹 브라우저가 가진 비밀 서랍장
-        const parsed = stored ? JSON.parse(stored) : [];
-        //꺼낸 파일(stored)이 서랍 안에 있는지 없는지 확인
-        //(? 뒷부분): 서랍 안의 데이터는 단순한 '글자' 형태이기 때문에, 자바스크립트가 계산하고 다룰 수 있는 '목록(배열/객체)' 형태로 변환
-        //없다면(: 뒷부분): 이전에 게임을 한 적이 없다는 뜻이므로, 텅 빈 바구니([])를 준비
-        savedPlayers = Array.isArray(parsed)
-        //parsed가 배열 형태가 맞는지 검사
-          ? parsed.filter(p => p && typeof p.name === 'string' && p.name.trim() !== '')
-          //정상이라면 필터로 불량 데이터를 걸러냄
-          //데이터(p)가 비어있는 게 아닌지, 이름이 string형태인지, 스페이스바만 누른 공백 이름은 아닌지
-                  .map(p => ({ name: p.name, chips: Number(p.chips) || 100, keep: p.keep !== false }))
-                  //데이터 재포장(map): 이름 그대로, 돈은 숫자로 바꾸되 이상한 값->100냥, 저장 여부 설정 => savedPlayers에 저장
-          : [];
-          //목록 형태 아니면 []를 savedPlayers에 넣음
-      } catch(e) { savedPlayers = []; }
-      //이 과정 중 오류->플레이어 명단을 []로 설정
-    }
-
-    function saveSavedPlayersToStorage() {
-      const data = savedPlayers.filter(p => p.keep !== false)
-      //savedPlayers 중, 삭제하기로 한 사람(p.keep === false)은 filter로 걸러냄
-                               .map(p => ({ name: p.name, chips: p.chips, keep: true }));
-                               //데이터 재포장
-      localStorage.setItem(SAVED_PLAYERS_KEY, JSON.stringify(data));
-      //아까 indianPokerSavedPlayers라는 이름표를 파일에 붙임
-      //data 형태로는 서랍에 넣을 수 X->문자열 형태로 압축하여 변환
-    }
-
-    window.addEventListener('load', function() {
-      //윈도우가 로드되면 함수 실행
-      loadSavedPlayersFromStorage();
-      makeNameInputs();
-      //이름 입력 칸 그리기
-    });
-
-    function escapeHTML(v) {
-      //해킹 방지 코드->입력된 이름은 전부 String으로 설정하여 코드 꼬이지 않게
-      return String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-      //&(앰퍼샌드) 기호를 전부 다 찾아냄(g), 찾은 & 기호를 &amp;로 바꿔치기
-      //< (작다) 기호는 &lt; > (크다) 기호는 &gt;로 바꿈
-                      .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-                      //큰따옴표(")와 작은따옴표(')도 바꿔줌
-    }
-
-    function makeNameInputs() {
-      const count = Number(document.getElementById('playerCount').value);
-      //화면에서 선택한 '참여 인원' 값을 진짜 숫자(Number)로 변환해서 가져옴
-      const box = document.getElementById('nameInputs');
-      //이름 입력 칸들을 집어넣을 HTML 내의 빈 상자 공간을 찾음
-      box.innerHTML = '';
-      //인원수가 바뀌었을 수 있으니 상자 안의 기존 내용을 싹 지워 초기화함
-      for (let i = 1; i <= count; i++) {
-        //count만큼 '입력 칸 만들기' 과정 반복
-        const saved = savedPlayers[i - 1];
-        //저장된 플레이어 목록에서 이번 순서의 사람 정보를 꺼냄
-        const defaultName = saved ? saved.name : '';
-        //저장된 정보가 있으면 원래 이름을 넣고, 새로 온 사람이면 빈칸
-        const placeholder = saved ? saved.name : ('패자 ' + i);
-        //아무것도 안 썼을 때 흐릿하게 보일 안내 글씨
-        const chipText = saved ? (saved.chips + '냥 남음') : '저장 없음';
-        //엽전 뱃지에 적힐 글씨
-        const chipClass = saved ? 'saved-chip-pill' : 'saved-chip-pill empty';
-        //엽전 뱃지의 디자인(클래스) 설정 ㄴ금색 디자인    ㄴ칙칙한 디자인
-        let options = '<option value="">불러오기</option>';
-        //'불러오기' 드롭다운 선택창의 맨 첫 번째 기본 안내 항목을 준비
-        savedPlayers.forEach(sp => {
-          //저장된 플레이어 전체 명단을 처음부터 끝까지 하나씩 훑어보면서
-          const sel = saved && sp.name === saved.name ? ' selected' : '';
-          //현재 칸이 이 사람의 원래 자리라면 selected 상태로 설정
-          options += `<option value="${escapeHTML(sp.name)}"${sel}>${escapeHTML(sp.name)} (${sp.chips}냥)</option>`;
-          //escapeHTML를 거친 안전한 이름과 남은 엽전 수를 선택창 목록에 계속 이어 붙임
-          //${sel}:''또는 selected로 나타남
-        });
-        box.innerHTML +=
-        //방금까지 준비한 모든 재료를 조립해서 비워둔 box에 추가
-          `<div class="player-input-row">
-            <input type="text" id="playerName${i}" placeholder="${escapeHTML(placeholder)}" value="${escapeHTML(defaultName)}" oninput="updateNameChip(${i})" />
-            <select id="loadPlayer${i}" class="load-player-select" onchange="loadSavedPlayer(${i})">${options}</select>
-            <div id="savedChip${i}" class="${chipClass}">${chipText}</div>
-          </div>`;
-      }
-    }
-
-    function loadSavedPlayer(index) {
-      //index(번호)를 받아, 그 사람의 칸에 저장된 이름을 불러옴
-      const sel = document.getElementById('loadPlayer' + index);
-      //화면에서 방금 사용자가 클릭한 '불러오기' 선택창을 찾아 sel에 담음
-      const inp = document.getElementById('playerName' + index);
-      //'이름 입력 칸'을 찾아서 inp에 담음
-      if (sel && inp) { inp.value = sel.value; updateNameChip(index); }
-      //sel의 이름을 inp에 덮어씌움, 칩도 알맞게 적용
-    }
-
-    function updateNameChip(index) {
-      const inp = document.getElementById('playerName' + index);
-      //현재 순서(index)에 해당하는 '이름 입력 칸'을 찾아 inp에 담음
-      const box = document.getElementById('savedChip' + index);
-      //화면에서 이름 옆의 엽전 뱃지 공간을 찾아 box에 담음
-      if (!inp || !box) return;
-      //못 찾았다면 돌아가기
-      const sp = savedPlayers.find(s => s.name === inp.value.trim());
-      //저장된 사람 명단(savedPlayers)을 뒤져서 입력칸의 이름과 똑같은 사람을 찾아 sp에 담음
-      //trim(): 이름 앞뒤 공백을 지움
-      if (sp) { box.textContent = sp.chips + '냥 남음'; box.className = 'saved-chip-pill'; }
-      //저장된 사람sp 찾았다면 칩 덮어씌우고 금색으로 변경
-      else     { box.textContent = '저장 없음';          box.className = 'saved-chip-pill empty'; }
-      //처음 게임하는 사람이면 칩:저장 없음, 회색으로 덮어씌움
-    }
-
-    function changeScreen(id) {
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      //.screen이름의 모든 화면 상자를 전부 찾아, active 제거
-      document.getElementById(id).classList.add('active');
-      //특정 id만 찾아 active 추가
-    }
-
-    function startGame() {
-      //판 시작하기 누르면 실행
-      const count = Number(document.getElementById('playerCount').value);
-      //참여 인원 선택창의 수를 count에 담음
-      players = [];
-      //초기화
-      for (let i = 1; i <= count; i++) {
-        const inp = document.getElementById('playerName' + i);
-        //i번째 사람의 이름 입력칸 찾아 inp에 담음
-        const name = (inp && inp.value.trim()) || ('패자 ' + i);
-        //이름 입력되었다면(&&) 공백 제거후 이름 작성, 입력X라면(||) 패자1로 지정
-        const sp = savedPlayers.find(s => s.name === name);
-        //확정한 이름이 명단에 있는지 확인
-        players.push({ name, chips: sp ? sp.chips : 100, card: 0, folded: false, betThisRound: 0 });
-        //선수 이름 등록, 돈:기존 데이터O->유지/X->100, 카드:0, 포기:false, 베팅금액:아직 없음(0)
-      }
-      startRound();
-    }
-
-    function startRound() {
-      if (players.length < 2) { alert('2명 이상이어야 합니다.'); return; }
-      //2명 미만->경고
-      chipsAtRoundStart = players.map(p => p.chips);
-      //시작시 칩 저장해두기
-      const broke = players.find(p => p.chips < ANTE);
-      //참가비 검사
-      if (broke) {
-        alert(broke.name + '님은 참가비 ' + ANTE + '냥이 부족합니다.');
-        changeScreen('startScreen'); makeNameInputs(); return;
-        //시작화면으로 가 이름 입력 후 startRound() 함수 종료
-      }
-      pot = 0; selectedRaiseTotal = 0; currentBet = ANTE; lastRaiseAmount = 0;
-      currentPlayerIndex = 0; pendingPlayers = [];
-      //테이블 초기화
-      dealCards();
-      //카드 배분
-      for (let i = 0; i < players.length; i++) {
-        //모든 플레이어 참가비 걷기
-        players[i].folded = false;
-        //이전 판의 폴드한 사람들 false로 초기화
-        players[i].chips -= ANTE; players[i].betThisRound = ANTE;
-        pot += ANTE; pendingPlayers.push(i);
-        //테이블에 판돈 더하고 대기자목록에 등록
-      }
-      showReadyScreen();
-      //첫번째 플레이어 준비 화면
-    }
-
-    function dealCards() {
-      let deck = [];
-      //빈 카드 상자 준비
-      for (let v = 1; v <= 10; v++) for (let c = 0; c < 4; c++) deck.push(v);
-      //1~10까지의 숫자 카드 4장씩 총 40장을 상자에 넣음
-      for (let i = deck.length - 1; i > 0; i--) {
-        //39번째부터 1번째까지 거꾸로 카드 섞음
-        const j = Math.floor(Math.random() * (i + 1));
-        //현재 i위치를 포함해 그 앞 카드 중 랜덤으로 하나 골라 j에 저장
-        [deck[i], deck[j]] = [deck[j], deck[i]];
-        //i와 j위치 바꿈
-      }
-      for (let i = 0; i < players.length; i++) players[i].card = deck[i];
-      //섞인 deck의 맨 앞부터 플레이어에게 배부
-    }
-
-    function showReadyScreen() {
-      const p = players[currentPlayerIndex];
-      //현재 플레이어 번호로 플레이어 정보 꺼내 p에 저장
-      document.getElementById('readyTitle').textContent = p.name + '님의 차례';
-      //readyTitle에 글씨 작성
-      document.getElementById('readyMessage').textContent = '준비되셨으면 확인 버튼을 눌러주세요.';
-      //readyMessage에 글씨 작성
-      changeScreen('readyScreen');
-      //화면 숨김 없애고 readyscreen화면으로 전환
-    }
-
-    function showTurnScreen() {
-      selectedRaiseTotal = 0;
-      //레이즈 금액 초기화
-      const p = players[currentPlayerIndex];
-      //플레이어 정보 p에 저장
-      const needToCall = currentBet - p.betThisRound;
-      //가장 높게 걸린 금액-내가 이미 낸 돈
-      const minRaise = Math.max(5, currentBet + 5 - p.betThisRound);
-      //가장 높게 걸린 금액-이미 낸 돈+5 -> 부터 레이즈 가능
-      //Math.max(A,B): A,B 중 더 큰 숫자 고르는 기능
-      //최소 5냥부터 레이즈하게끔 방지
-      document.getElementById('turnTitle').textContent = p.name + '님의 선택';
-      document.getElementById('potAmount').textContent = pot;
-      //테이블에 총 판돈
-      document.getElementById('myChipInfo').innerHTML = `내 엽전: <span class="highlight">${p.chips}냥</span>`;
-      //현재 잔액 highlight스타일 적용해 강조
-      document.getElementById('callInfo').innerHTML = needToCall > 0
-        ? `따라가기 <span class="highlight">${needToCall}냥</span> · 올리기 최소 <span class="highlight">${minRaise}냥</span>`
-        //콜에 필요한 금액>0 -> 콜하려면 얼마 필요, 레이즈하려면 얼마 필요 보임
-        : `Check 가능 · 올리기 최소 <span class="highlight">${minRaise}냥</span>`;
-        //콜에 필요한 금액<=0 -> 돈 안내고 통과(call버튼으로 check) 가능, 최소 레이즈 금액 보임
-
-      renderTableRing();
-      updateSelectedAmount();
-      //현재 선택된 추가 베팅액 표시
-      changeScreen('turnScreen');
-      //화면 숨김 없애고 turnscreen화면으로 전환
-    }
-
-    // ══════════════════════════════════════════
-    //  RENDER TABLE RING — players around the table
-    // ══════════════════════════════════════════
-    function renderTableRing() {
-      const slotsContainer = document.getElementById('playerRingSlots');
-      slotsContainer.innerHTML = '';
-
-      const others = players.map((p, i) => ({ p, i }))
-                             .filter(({ i }) => i !== currentPlayerIndex);
-
-      if (others.length === 0) return;
-
-      const outerEl = document.getElementById('pokerTableOuter');
-      outerEl.classList.remove('size-small', 'size-medium', 'size-large');
-      if (players.length <= 3) {
-        outerEl.classList.add('size-large');
-      } else if (players.length <= 6) {
-        outerEl.classList.add('size-medium');
-      } else {
-        outerEl.classList.add('size-small');
-      }
-      const size = outerEl.offsetWidth || 400;
-
-      const cx = size / 2;
-      const cy = size / 2;
-
-      // 카드가 초록색 중앙판이 아니라 나무 판 위에 올라오도록 반지름 유지
-      const R = size * 0.39;
-
-      const n = others.length;
-
-      others.forEach(({ p, i: playerIdx }, idx) => {
-        const angle = (idx / n) * 2 * Math.PI - Math.PI / 2;
-        const x = cx + R * Math.cos(angle);
-        const y = cy + R * Math.sin(angle);
-
-        const slot = document.createElement('div');
-        slot.className = 'player-slot';
-        slot.style.left = x + 'px';
-        slot.style.top  = y + 'px';
-
-        // Label
-        const label = document.createElement('div');
-        label.className = 'player-label';
-        label.textContent = p.name;
-
-        // Card
-        const card = document.createElement('div');
-        if (p.folded) {
-          card.className = 'playing-card folded-card';
-          card.textContent = 'FOLD';
-        } else {
-          card.className = 'playing-card';
-          card.textContent = p.card;
-        }
-
-        // Info
-        const info = document.createElement('div');
-        info.className = 'table-card-info';
-        if (p.folded) {
-          info.innerHTML = `<span class="tci-bet">${p.betThisRound}냥</span><span class="tci-fold">폴드</span>`;
-        } else {
-          info.innerHTML = `<span class="tci-bet">${p.betThisRound}냥</span><span class="tci-chips">${p.chips}냥</span>`;
-        }
-
-        // Sake cup 술잔
-        const cup = document.createElement('div');
-        cup.className = 'sake-cup';
-        cup.setAttribute('data-player', playerIdx);
-        cup.title = '술잔 던지기!';
-        cup.innerHTML = makeSakeCupSVG();
-        cup.addEventListener('click', (e) => throwCup(e, cup, x, y));
-
-        const main = document.createElement('div');
-        main.className = 'player-main';
-        main.appendChild(label);
-        main.appendChild(card);
-        main.appendChild(info);
-
-        slot.appendChild(main);
-        slot.appendChild(cup);
-        slotsContainer.appendChild(slot);
-      });
-    }
-
-    function makeSakeCupSVG() {
-      return `<svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-        <!-- Base -->
-        <ellipse cx="16" cy="27" rx="7" ry="2.5" fill="#5c3a1e"/>
-        <!-- Cup body -->
-        <path d="M9 10 Q9 26 16 26 Q23 26 23 10 Z" fill="url(#sake1)" stroke="#8a5e0a" stroke-width="0.8"/>
-        <!-- Rim -->
-        <ellipse cx="16" cy="10" rx="7" ry="2.5" fill="#c8941a" stroke="#8a5e0a" stroke-width="0.5"/>
-        <!-- Liquid surface -->
-        <ellipse cx="16" cy="12" rx="5.5" ry="1.8" fill="rgba(220,180,120,0.7)"/>
-        <!-- Shine -->
-        <path d="M11 13 Q12 11 13 13" stroke="rgba(255,240,200,0.6)" stroke-width="0.8" fill="none"/>
-        <!-- Joseon pattern on cup -->
-        <path d="M12 18 L14 16 L16 18 L18 16 L20 18" stroke="rgba(200,148,26,0.5)" stroke-width="0.6" fill="none"/>
-        <defs>
-          <linearGradient id="sake1" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stop-color="#7a4e28"/>
-            <stop offset="40%" stop-color="#a06030"/>
-            <stop offset="100%" stop-color="#5c3a1e"/>
-          </linearGradient>
-        </defs>
-      </svg>`;
-    }
-
-    // ══════════════════════════════════════════
-    //  THROW CUP ANIMATION
-    // ══════════════════════════════════════════
-    function throwCup(event, cupEl, slotX, slotY) {
-      event.stopPropagation();
-
-      const outerEl = document.getElementById('pokerTableOuter');
-      outerEl.classList.remove('size-small', 'size-medium', 'size-large');
-      if (players.length <= 3) {
-        outerEl.classList.add('size-large');
-      } else if (players.length <= 6) {
-        outerEl.classList.add('size-medium');
-      } else {
-        outerEl.classList.add('size-small');
-      }
-      const size = outerEl.offsetWidth || 400;
-      const cx = size / 2;
-      const cy = size / 2;
-
-      // Calculate throw vector from slot position to center
-      const dx = cx - slotX;
-      const dy = cy - slotY;
-
-      cupEl.style.setProperty('--tx', (dx * 0.5) + 'px');
-      cupEl.style.setProperty('--ty', (dy * 0.5) + 'px');
-      cupEl.style.setProperty('--tx2', (dx * 0.8) + 'px');
-      cupEl.style.setProperty('--ty2', (dy * 0.8) + 'px');
-      cupEl.style.setProperty('--tx3', dx + 'px');
-      cupEl.style.setProperty('--ty3', dy + 'px');
-
-      cupEl.classList.add('cup-throwing');
-
-      // After throw, create splash
-      setTimeout(() => {
-        createSplash();
-        cupEl.classList.remove('cup-throwing');
-      }, 700);
-    }
-
-    function createSplash() {
-      const container = document.getElementById('splashContainer');
-
-      // Create multiple water drops
-      for (let i = 0; i < 8; i++) {
-        const drop = document.createElement('div');
-        drop.className = 'splash-drop';
-        const angle = (i / 8) * 360;
-        const dist = 15 + Math.random() * 25;
-        const x = Math.cos(angle * Math.PI / 180) * dist;
-        const y = Math.sin(angle * Math.PI / 180) * dist;
-        drop.style.left = (50 + x) + '%';
-        drop.style.top  = (50 + y) + '%';
-        drop.style.animationDelay = (Math.random() * 0.15) + 's';
-        container.appendChild(drop);
-        setTimeout(() => drop.remove(), 1000);
-      }
-
-      // Ripple waves
-      for (let w = 0; w < 3; w++) {
-        const wave = document.createElement('div');
-        wave.className = 'splash-wave';
-        wave.style.left = '50%';
-        wave.style.top  = '50%';
-        wave.style.animationDelay = (w * 0.2) + 's';
-        container.appendChild(wave);
-        setTimeout(() => wave.remove(), 1500);
-      }
-
-      // Water overflow puddle
-      const overflow = document.createElement('div');
-      overflow.className = 'water-overflow';
-      overflow.style.left = '50%';
-      overflow.style.top  = '50%';
-      container.appendChild(overflow);
-      setTimeout(() => overflow.remove(), 2000);
-    }
-
-    // ══════════════════════════════════════════
-    //  RAISE / ACTION
-    // ══════════════════════════════════════════
-    function addRaise(amount) {
-      selectedRaiseTotal += amount;
-      updateSelectedAmount();
-    }
-
-    function clearRaise() {
-      selectedRaiseTotal = 0;
-      updateSelectedAmount();
-    }
-
-    function updateSelectedAmount() {
-      document.getElementById('selectedAmount').textContent = `선택된 레이즈: ${selectedRaiseTotal}냥`;
-      //body의 id=selectedAmount의 텍스트를 변경
-    }
-
-    function chooseAction(action) {
-      const p = players[currentPlayerIndex];
-      const needToCall = currentBet - p.betThisRound;
-
-      if (action === 'fold') {
-        p.folded = true;
-        removeFromPending(currentPlayerIndex);
-        //대기자 명단에서 플레이어 삭제
-        if (activePlayerCount() === 1) {
-          //만약 나만 살아있다면
-          const wi = players.findIndex(x => !x.folded);
-          //남은 1명을 찾아  wi에 저장
-          finishByOnlyOneLeft(wi); return;
-          //pot을 몰아주고 종료
-        }
-        goNextTurn(); return;
-        //생존자 더 있으면 차례 넘기고 종료
-      }
-
-      if (action === 'call') {
-        if (p.chips < needToCall) { alert('따라가기 할 엽전이 부족합니다.'); return; }
-        //잔액<콜위한금액 -> 경고 후 취소
-        p.chips -= needToCall; p.betThisRound += needToCall; pot += needToCall;
-        //잔액-콜위한금액, ...
-        removeFromPending(currentPlayerIndex);
-        //대기자명단에서 삭제
-        if (pendingPlayers.length === 0) showdown(); else goNextTurn();
-        //대기자명단=0 -> 카드 공개 / 사람 남았으면 차례 넘김 
-        return;
-      }
-
-      if (action === 'raise') {
-        if (selectedRaiseTotal <= 0) { alert('올리기 금액을 선택하세요.'); return; }
-        //금액 선택X-> 경고
-        const newTotalBet = p.betThisRound + selectedRaiseTotal;
-        //낸 총액 newTotalBet에 저장
-        const minNeeded = currentBet + 5 - p.betThisRound;
-        if (selectedRaiseTotal < minNeeded) { alert('올리기 최소 ' + minNeeded + '냥 필요합니다.'); return; }
-        //레이즈 최소 금액 경고
-        if (p.chips < selectedRaiseTotal) { alert('엽전이 부족합니다.'); return; }
-        //잔액 부족 경고
-        p.chips -= selectedRaiseTotal; p.betThisRound = newTotalBet;
-        //잔액, 낸 돈 재설정
-        pot += selectedRaiseTotal; currentBet = newTotalBet; lastRaiseAmount = selectedRaiseTotal;
-        //**최고베팅액=내가 낸 총액**
-        pendingPlayers = players.map((_,i) => i).filter(i => !players[i].folded && i !== currentPlayerIndex);
-        //대기자명단=나 자신 && 폴드한 사람 제외 전부로 수정
-        goNextTurn();
-      }
-    }
-
-    function removeFromPending(index) {
-      pendingPlayers = pendingPlayers.filter(i => i !== index);
-      //대기자명단=index포함되지 않는 플레이어만 남게
-    }
-
-    function goNextTurn() {
-      if (pendingPlayers.length === 0) { showdown(); return; }
-      //대기자명단=0 -> 카드공개 후 종료
-      let next = currentPlayerIndex;
-      let safety = 0;
-      //무한루프 에러 방지
-      do {
-        next = (next + 1) % players.length;
-        //**next+=1로 하면 맨 마지막 플레이어 허공을 가리킴**
-        safety++;
-        //한 명 탐색할 때마다 안전 카운터 1씩 올림
-      } while ((players[next].folded || !pendingPlayers.includes(next)) && safety <= players.length + 1);
-      //어떤 사람을 건너뛸 건지
-      //다음 사람=폴드, 다음 사람=대기자명단에 없음 && safety<=총인원+1
-      currentPlayerIndex = next;
-      //건너뛸 사람 패스 후 다음 사람=현재 사람으로 설정
-      showReadyScreen();
-      //readyscreen 보여주기
-    }
-
-    function activePlayerCount() {
-      return players.filter(p => !p.folded).length;
-      //폴드하지 않은 사람의 수
-    }
-
-    function finishByOnlyOneLeft(wi) {
-      players[wi].chips += pot; pot = 0;
-      //마지막 생존자에게 칩 몰아주기, pot 초기화
-      renderResultScreen('다른 패자들이 모두 포기하였습니다.', [wi]);
-    }
-
-    function showdown() {
-      let maxCard = -1; let winners = [];
-      //어떤 카드든 첫 공개시 max가 되도록 -1로 설정, 동점자 유의하여 배열로 정의
-      for (let i = 0; i < players.length; i++) {
-        if (!players[i].folded) {
-          if (players[i].card > maxCard) { maxCard = players[i].card; winners = [i]; }
-          //플레이어 카드>max카드 -> 위너
-          else if (players[i].card === maxCard) winners.push(i);
-          //플레이어 카드=max카드 -> 위너 배열에 추가
-        }
-      }
-      const prize = winners.length > 0 ? Math.floor(pot / winners.length) : 0;
-      //상금 계산; 우승자>0 -> 상금 나누기 / 우승자=0 -> 상금=0
-      //Math.floor: 소수점 버림 기능
-      winners.forEach(wi => players[wi].chips += prize);
-      //위너 배열에서 위너들의 잔액+상금
-      pot = 0;
-      const subtitle = winners.length === 1
-        ? `${players[winners[0]].name}님 승리!`
-        //우승자 1명 -> 000님 승리
-        : `무승부: ${winners.map(i => players[i].name).join(', ')}`;
-        //우승자 여러명 -> 무승부: 000, 000
-      renderResultScreen(subtitle, winners);
-      //위 데이터와 함께 결과화면으로
-    }
-
-    function renderResultScreen(subtitle, winners) {
-      const row = document.getElementById('resultCards');
-      row.innerHTML = '';
-      players.forEach((p, i) => {
-        const slot = document.createElement('div');
-        slot.className = 'result-card-slot';
-        const label = document.createElement('div');
-        label.className = 'player-label'; label.textContent = p.name;
-        const card = document.createElement('div');
-        card.className = 'result-playing-card'
-          + (winners.includes(i) ? ' winner-card' : '')
-          + (p.folded ? ' folded-result' : '');
-        card.textContent = p.card;
-        slot.appendChild(label); slot.appendChild(card);
-        if (p.folded) {
-          const badge = document.createElement('div');
-          badge.className = 'fold-badge'; badge.textContent = '포기';
-          slot.appendChild(badge);
-        }
-        row.appendChild(slot);
-      });
-
-      document.getElementById('winnerResult').textContent = subtitle;
-
-      const ranked = players.map((p, i) => ({
-        name: p.name, chips: p.chips,
-        delta: p.chips - chipsAtRoundStart[i],
-        isWinner: winners.includes(i)
-      }));
-      ranked.sort((a, b) => b.chips - a.chips);
-
-      savedPlayers = players.map(p => ({ name: p.name, chips: p.chips, keep: true }));
-      saveSavedPlayersToStorage();
-
-      const tbody = document.getElementById('rankingBody');
-      tbody.innerHTML = '';
-      let prevChips = null; let displayRank = 0;
-      ranked.forEach((r, idx) => {
-        const tr = document.createElement('tr');
-        tr.id = 'rank-row-' + r.name;
-        if (r.isWinner) tr.className = 'winner-row';
-        if (r.chips !== prevChips) displayRank = idx + 1;
-        prevChips = r.chips;
-        const badgeClass = displayRank <= 3 ? 'rank-' + displayRank : '';
-        const dc = r.delta > 0 ? 'delta-pos' : r.delta < 0 ? 'delta-neg' : 'delta-zero';
-        const dt = r.delta > 0 ? '+' + r.delta : '' + r.delta;
-        const medal = displayRank === 1 ? '🥇' : displayRank === 2 ? '🥈' : displayRank === 3 ? '🥉' : '';
-        tr.innerHTML =
-          `<td><span class="rank-badge ${badgeClass}">${displayRank}</span></td>` +
-          `<td>${medal ? medal + ' ' : ''}${r.name}</td>` +
-          `<td><span class="${dc}">${dt}냥</span></td>` +
-          `<td><strong>${r.chips}냥</strong></td>` +
-          `<td class="save-cell">
-            <button class="save-btn keep-btn active-keep" onclick="setSave('${r.name}', true)">저장</button>
-            <button class="save-btn del-btn" onclick="setSave('${r.name}', false)">삭제</button>
-          </td>`;
-        tbody.appendChild(tr);
-      });
-      changeScreen('resultScreen');
-    }
-
-    function setSave(name, keep) {
-      const entry = savedPlayers.find(s => s.name === name);
-      if (entry) entry.keep = keep;
-      saveSavedPlayersToStorage();
-      const row = document.getElementById('rank-row-' + name);
-      if (row) {
-        row.querySelector('.keep-btn')[keep ? 'add' : 'remove']('active-keep');
-        row.querySelector('.del-btn')[keep ? 'remove' : 'add']('active-del');
-        row.style.opacity = keep ? '1' : '0.45';
-      }
-    }
-
-    function goNextGame() {
-      savedPlayers = savedPlayers.filter(s => s.keep);
-      saveSavedPlayersToStorage();
-      players = [];
-      changeScreen('startScreen');
-      makeNameInputs();
-    }
-
-    function nextRound() { startRound(); }
-    function resetGame() {
-      savedPlayers = savedPlayers.filter(s => s.keep);
-      saveSavedPlayersToStorage();
-      players = [];
-      changeScreen('startScreen');
-      makeNameInputs();
-    }
-
-    // Recalculate ring on resize
-    window.addEventListener('resize', () => {
-      if (document.getElementById('turnScreen').classList.contains('active')) {
-        renderTableRing();
-      }
-    });
-  </script>
+  </div>
+
+<script>
+function loadLogs() {
+  let chips = localStorage.getItem('joseon_global_chips');
+  if (!chips) {
+    chips = 100;
+    localStorage.setItem('joseon_global_chips', chips);
+  }
+  document.getElementById('globalChipsDisplay').innerText = chips;
+
+  const logBody = document.getElementById('logBody');
+  const logs = JSON.parse(localStorage.getItem('joseon_arcade_unified_logs') || '[]');
+  
+  if (logs.length === 0) {
+    logBody.innerHTML = `<tr><td colspan="4" class="no-log">아직 기록된 경합 내역이 없네. 게임을 시작해보시게!</td></tr>`;
+    return;
+  }
+  
+  logBody.innerHTML = logs.map(l => {
+    let badgeClass = 'draw';
+    if(l.result.includes('승') || l.result.includes('Win')) badgeClass = 'win';
+    if(l.result.includes('패') || l.result.includes('Lose')) badgeClass = 'lose';
+    
+    return `<tr>
+      <td style="font-weight:bold;">${l.game}</td>
+      <td style="font-size:0.85rem; color:#555;">${l.time}</td>
+      <td><span class="badge ${badgeClass}">${l.result}</span></td>
+      <td style="font-size:0.9rem;">${l.detail}</td>
+    </tr>`;
+  }).join('');
+}
+
+function clearLogs() {
+  if (confirm('정말로 주막의 모든 전적 장부를 불태우시겠습니까? (재화도 100냥으로 초기화됩니다)')) {
+    localStorage.removeItem('joseon_arcade_unified_logs');
+    localStorage.setItem('joseon_global_chips', 100);
+    loadLogs();
+  }
+}
+
+window.onload = loadLogs;
+</script>
 </body>
 </html>
