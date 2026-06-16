@@ -1,12 +1,12 @@
 {
-  "name": "Indian Poker & Blackjack",
-  "short_name": "CardGame",
-  "description": "인디언포커와 블랙잭을 플레이할 수 있는 카드 게임 앱",
-  "start_url": "./",
+  "name": "조선 명가 오락 주막",
+  "short_name": "오락 주막",
+  "description": "인디언 포-카, 인디언 블랙잭, 조선 블랙잭을 즐길 수 있는 카드 게임 로비입니다.",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#111827",
-  "theme_color": "#111827",
+  "background_color": "#0d0a06",
+  "theme_color": "#1a1208",
   "icons": [
     {
       "src": "./icons/icon-192.png",
