@@ -117,6 +117,10 @@ h1 {
   text-shadow: 0 4px 0 #5a3500, 0 16px 34px rgba(0,0,0,0.72);
 }
 
+.title-line {
+  display: inline;
+}
+
 .hero-copy p {
   max-width: 620px;
   margin: 22px 0 0;
@@ -746,9 +750,17 @@ h1 {
 
   h1 {
     font-size: 3rem;
+    text-align: center;
+    line-height: 1.08;
+  }
+
+  .title-line {
+    display: block;
+    white-space: nowrap;
   }
 
   .hero-copy p {
+    text-align: center;
     font-size: 1rem;
   }
 
@@ -791,6 +803,43 @@ h1 {
     font-size: 1.12rem;
   }
 
+  .rules-modal {
+    align-items: stretch;
+    padding: 10px;
+  }
+
+  .rules-panel {
+    max-height: calc(100dvh - 20px);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .rules-menu {
+    padding: 16px;
+  }
+
+  .rules-content {
+    min-height: 0;
+    max-height: none;
+    flex: 1;
+    padding: 16px 14px 18px;
+  }
+
+  .rules-topbar {
+    align-items: flex-start;
+  }
+
+  .rules-body {
+    overflow-wrap: anywhere;
+  }
+
+  .rules-body table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
   .hero-actions {
     flex-direction: column;
   }
@@ -817,7 +866,7 @@ h1 {
     <section class="hero" aria-labelledby="page-title">
       <div class="hero-copy">
         <div class="eyebrow">카드와 판돈이 오가는 밤</div>
-        <h1 id="page-title">조선 명가 오락 주막</h1>
+        <h1 id="page-title"><span class="title-line">조선 명가</span> <span class="title-line">오락 주막</span></h1>
         <p>
           촛불 아래 둥근 판이 열렸습니다. 인디언 포-카, 인디언 블랙잭, 조선 블랙잭 중
           원하는 경합을 골라 패를 읽고, 배짱을 걸고, 마지막 장부에 이름을 남겨보세요.
