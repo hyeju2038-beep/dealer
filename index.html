@@ -4,7 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>조선 명가 오락 주막</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./icons/icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg-dark: #0d0a06;
@@ -12,7 +14,6 @@
   --wood-dark: #2c1a0a;
   --wood-mid: #3d2510;
   --wood-light: #5c3a1e;
-  --wood-highlight: #7a4e28;
   --gold: #c8941a;
   --gold-light: #f0c040;
   --gold-pale: #fae08a;
@@ -21,273 +22,1121 @@
   --cream: #f5e6c8;
   --parchment: #e8d4a0;
   --ink: #1a0f05;
+  --jade: #2d6a4f;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+}
 
 body {
-  background-color: var(--bg-dark);
-  background-image: radial-gradient(circle at center, var(--bg-mid) 0%, var(--bg-dark) 100%);
+  min-height: 100vh;
   color: var(--cream);
   font-family: 'Noto Sans KR', sans-serif;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 40px 20px;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(240,192,64,0.16) 0%, transparent 48%),
+    radial-gradient(circle at 18% 20%, rgba(139,26,26,0.16), transparent 30%),
+    linear-gradient(180deg, #0d0a06 0%, #150d05 45%, #1a1208 100%);
+  overflow-x: hidden;
 }
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 58px, rgba(200,148,26,0.045) 60px),
+    repeating-linear-gradient(90deg, transparent, transparent 58px, rgba(200,148,26,0.035) 60px);
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(90deg, rgba(0,0,0,0.52), transparent 18%, transparent 82%, rgba(0,0,0,0.52)),
+    radial-gradient(circle at 50% 50%, transparent 42%, rgba(0,0,0,0.46) 100%);
+  pointer-events: none;
+}
+
+a { color: inherit; }
 
 h1, h2, h3 {
   font-family: 'Noto Serif KR', serif;
+  margin: 0;
 }
 
-.header {
-  text-align: center;
-  margin-bottom: 40px;
-  border-bottom: 2px double var(--gold);
-  padding-bottom: 20px;
-  width: 100%;
-  max-width: 800px;
+.page {
+  width: min(1120px, calc(100% - 36px));
+  margin: 0 auto;
+  padding: 36px 0 44px;
 }
 
-.header h1 {
-  font-size: 2.5rem;
-  color: var(--gold-light);
-  text-shadow: 0 4px 8px rgba(0,0,0,0.7);
-  letter-spacing: 2px;
-}
-
-.header p {
-  font-size: 1rem;
-  color: var(--parchment);
-  margin-top: 8px;
-  opacity: 0.8;
-}
-
-/* 게임 선택 그리드 */
-.game-grid {
+.hero {
+  min-height: min(690px, calc(100vh - 28px));
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 25px;
-  width: 100%;
-  max-width: 800px;
-  margin-bottom: 50px;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 440px);
+  gap: 34px;
+  align-items: center;
+  padding: 18px 0 32px;
 }
 
-.game-card {
-  background: linear-gradient(135deg, var(--wood-mid) 0%, var(--wood-dark) 100%);
-  border: 3px solid var(--wood-light);
-  border-radius: 8px;
-  padding: 30px 20px;
-  text-align: center;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-  cursor: pointer;
-  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  color: var(--gold-light);
+  font-family: 'Noto Serif KR', serif;
+  font-weight: 700;
+}
+
+.eyebrow::before,
+.eyebrow::after {
+  content: "";
+  width: 34px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold));
+}
+
+.eyebrow::after {
+  background: linear-gradient(90deg, var(--gold), transparent);
+}
+
+h1 {
+  max-width: 720px;
+  color: var(--gold-pale);
+  font-size: clamp(3rem, 8vw, 6.8rem);
+  line-height: 0.96;
+  font-weight: 900;
+  text-shadow: 0 4px 0 #5a3500, 0 16px 34px rgba(0,0,0,0.72);
+}
+
+.hero-copy p {
+  max-width: 620px;
+  margin: 22px 0 0;
+  color: var(--parchment);
+  font-size: 1.08rem;
+  line-height: 1.75;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0 20px;
+  border-radius: 4px;
+  border: 1px solid rgba(240,192,64,0.7);
+  font-family: 'Noto Serif KR', serif;
+  font-weight: 800;
   text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.button.primary {
+  color: var(--ink);
+  background: linear-gradient(180deg, var(--gold-light), var(--gold));
+  box-shadow: 0 4px 0 #6b4508, 0 12px 24px rgba(200,148,26,0.24);
+}
+
+.button.secondary {
+  color: var(--gold-pale);
+  background: rgba(60,30,10,0.78);
+}
+
+.button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #6b4508, 0 18px 34px rgba(200,148,26,0.28);
+}
+
+.table-stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 500px;
+}
+
+.lantern {
+  position: absolute;
+  top: 10px;
+  right: 8px;
+  width: 92px;
+  height: 126px;
+  border: 2px solid rgba(240,192,64,0.58);
+  border-radius: 46px 46px 38px 38px;
+  background:
+    linear-gradient(90deg, transparent 18%, rgba(255,255,255,0.14) 50%, transparent 82%),
+    radial-gradient(circle at 50% 38%, rgba(240,192,64,0.9), rgba(192,57,43,0.58) 48%, rgba(80,18,12,0.92));
+  box-shadow: 0 0 52px rgba(240,140,40,0.3);
+}
+
+.lantern::before,
+.lantern::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 52px;
+  height: 8px;
+  background: var(--wood-dark);
+  border: 1px solid var(--gold);
+}
+
+.lantern::before { top: -7px; }
+.lantern::after { bottom: -7px; }
+
+.round-table {
+  position: relative;
+  width: min(82vw, 420px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    conic-gradient(
+      from 12deg,
+      #5c3a1e 0deg, #7a4e28 32deg, #3d2510 64deg, #8a5530 95deg,
+      #4a2c0e 132deg, #7a4e28 176deg, #5c3a1e 222deg, #8a5530 270deg,
+      #3d2510 320deg, #5c3a1e 360deg
+    );
+  box-shadow: 0 0 0 8px #2c1a0a, 0 0 0 14px rgba(200,148,26,0.45), 0 32px 68px rgba(0,0,0,0.78);
+}
+
+.round-table::before {
+  content: "";
+  position: absolute;
+  inset: 42px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 32%, #317653 0%, #1f533d 54%, #143225 100%);
+  border: 4px solid #2c1a0a;
+  box-shadow: inset 0 0 42px rgba(0,0,0,0.58);
+}
+
+.round-table::after {
+  content: "DEALER";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 1;
+  transform: translate(-50%, -50%);
+  color: rgba(250,224,138,0.28);
+  font-family: 'Noto Serif KR', serif;
+  font-size: 0.85rem;
+  font-weight: 900;
+  letter-spacing: 4px;
+}
+
+.brand-seal {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 128px;
+  height: 128px;
+  z-index: 2;
+  transform: translate(-50%, -50%);
+  border-radius: 24px;
+  border: 2px solid rgba(240,192,64,0.62);
+  box-shadow: 0 14px 28px rgba(0,0,0,0.46);
+}
+
+.card {
+  position: absolute;
+  z-index: 3;
+  width: 74px;
+  height: 106px;
+  border-radius: 7px;
+  background: linear-gradient(135deg, #f8f0e0, #ead9b6);
+  border: 2px solid rgba(139,26,26,0.58);
+  color: var(--red);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  align-items: center;
+  padding: 8px;
+  font-family: 'Noto Serif KR', serif;
+  font-weight: 900;
+  font-size: 1.1rem;
+  box-shadow: 0 10px 18px rgba(0,0,0,0.38);
+}
+
+.card span:nth-child(2) {
+  align-self: center;
+  font-size: 1.7rem;
+}
+
+.card span:nth-child(3) {
+  align-self: flex-end;
+  transform: rotate(180deg);
+}
+
+.card.one { left: 54px; top: 96px; transform: rotate(-18deg); color: var(--ink); }
+.card.two { right: 60px; top: 102px; transform: rotate(16deg); }
+.card.three { left: 88px; bottom: 76px; transform: rotate(12deg); }
+.card.four { right: 88px; bottom: 78px; transform: rotate(-12deg); color: var(--ink); }
+
+.coin {
+  position: absolute;
+  z-index: 2;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, var(--gold-light), var(--gold) 58%, #875908);
+  border: 2px solid #8a5e0a;
+  box-shadow: 0 6px 0 #5a3500, 0 12px 20px rgba(0,0,0,0.38);
+}
+
+.coin.a { left: 42px; bottom: 154px; }
+.coin.b { right: 42px; bottom: 152px; width: 38px; height: 38px; }
+
+.section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 20px;
+  margin: 10px 0 18px;
+  border-bottom: 2px double rgba(200,148,26,0.72);
+  padding-bottom: 14px;
+}
+
+.section-title h2 {
+  color: var(--gold-pale);
+  font-size: 1.85rem;
+}
+
+.section-title p {
+  max-width: 560px;
+  margin: 0;
+  color: rgba(245,230,200,0.76);
+  line-height: 1.55;
+  text-align: right;
+}
+
+.game-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.game-card {
+  position: relative;
+  min-height: 286px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 22px;
+  border-radius: 8px;
+  border: 2px solid rgba(122,78,40,0.95);
+  background: linear-gradient(135deg, rgba(61,37,16,0.96), rgba(26,15,5,0.96));
+  box-shadow: 0 18px 32px rgba(0,0,0,0.42);
+  overflow: hidden;
+  text-decoration: none;
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.game-card::before {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border: 1px solid rgba(200,148,26,0.22);
+  border-radius: 5px;
+  pointer-events: none;
 }
 
 .game-card:hover {
   transform: translateY(-5px);
   border-color: var(--gold);
-  box-shadow: 0 15px 30px rgba(200, 148, 26, 0.2);
+  box-shadow: 0 22px 42px rgba(0,0,0,0.55), 0 0 28px rgba(200,148,26,0.16);
 }
 
-.game-card h2 {
+.game-card h3 {
   color: var(--gold-pale);
-  font-size: 1.5rem;
-  margin-bottom: 12px;
+  font-size: 1.48rem;
+  line-height: 1.25;
 }
 
 .game-card p {
-  color: var(--cream);
-  font-size: 0.9rem;
-  opacity: 0.75;
-  line-height: 1.4;
-  margin-bottom: 20px;
+  margin: 12px 0 18px;
+  color: rgba(245,230,200,0.78);
+  line-height: 1.62;
+  font-size: 0.96rem;
 }
 
-.btn-play {
-  background: var(--wood-highlight);
-  color: var(--gold-pale);
-  border: 1px solid var(--gold);
-  padding: 8px 20px;
-  font-weight: bold;
-  border-radius: 4px;
-  font-family: 'Noto Serif KR', serif;
-  transition: background 0.2s;
-}
-
-.game-card:hover .btn-play {
-  background: var(--gold);
-  color: var(--ink);
-}
-
-/* 대통합 장부 (결과 내역) */
-.log-section {
-  width: 100%;
-  max-width: 800px;
-  background: var(--parchment);
-  color: var(--ink);
-  border-radius: 6px;
-  padding: 25px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.6);
-  border: 4px double var(--wood-dark);
-}
-
-.log-header {
+.game-meta {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 2px solid var(--ink);
-  padding-bottom: 10px;
-  margin-bottom: 15px;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 16px;
 }
 
-.log-header h2 {
-  font-size: 1.3rem;
+.tag {
+  border: 1px solid rgba(200,148,26,0.42);
+  border-radius: 999px;
+  padding: 5px 10px;
+  color: var(--gold-light);
+  background: rgba(20,10,3,0.62);
+  font-size: 0.82rem;
   font-weight: 700;
 }
 
-.btn-clear {
-  background: var(--red);
-  color: white;
-  border: none;
-  padding: 4px 10px;
-  font-size: 0.8rem;
-  border-radius: 3px;
-  cursor: pointer;
+.enter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 18px;
+  min-height: 38px;
+  width: 100%;
+  border-radius: 4px;
+  background: rgba(200,148,26,0.18);
+  border: 1px solid rgba(240,192,64,0.58);
+  color: var(--gold-pale);
+  font-family: 'Noto Serif KR', serif;
+  font-weight: 800;
 }
 
-.btn-clear:hover { background: var(--red-bright); }
+.ledger {
+  margin-top: 34px;
+  background: linear-gradient(180deg, var(--parchment), #dbc487);
+  color: var(--ink);
+  border: 4px double var(--wood-dark);
+  border-radius: 8px;
+  box-shadow: 0 18px 38px rgba(0,0,0,0.48);
+  overflow: hidden;
+}
 
-.log-table-container {
-  max-height: 300px;
-  overflow-y: auto;
+.ledger-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 18px 22px;
+  border-bottom: 2px solid rgba(26,15,5,0.72);
+}
+
+.ledger-header h2 {
+  color: var(--ink);
+  font-size: 1.35rem;
+}
+
+.clear-button {
+  min-height: 34px;
+  border: 0;
+  border-radius: 4px;
+  background: var(--red);
+  color: #fff;
+  padding: 0 12px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.clear-button:hover { background: var(--red-bright); }
+
+.log-table-wrap {
+  max-height: 320px;
+  overflow: auto;
 }
 
 .log-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.95rem;
+  font-size: 0.94rem;
 }
 
-.log-table th, .log-table td {
-  padding: 10px;
+.log-table th,
+.log-table td {
+  padding: 12px 14px;
   text-align: left;
-  border-bottom: 1px solid rgba(26, 15, 5, 0.15);
+  border-bottom: 1px solid rgba(26,15,5,0.14);
 }
 
 .log-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #d8bf80;
   font-family: 'Noto Serif KR', serif;
-  font-weight: bold;
-  background: rgba(0, 0, 0, 0.05);
 }
 
 .badge {
-  display: inline-block;
-  padding: 2px 6px;
-  border-radius: 3px;
-  font-size: 0.8rem;
-  font-weight: bold;
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 8px;
+  border-radius: 4px;
   color: #fff;
+  font-size: 0.82rem;
+  font-weight: 800;
 }
-.badge.win { background-color: #2d6a4f; }
-.badge.lose { background-color: var(--red); }
-.badge.draw { background-color: #555; }
+
+.badge.win { background: var(--jade); }
+.badge.lose { background: var(--red); }
+.badge.draw { background: #555; }
 
 .no-log {
+  padding: 34px 18px;
   text-align: center;
-  padding: 30px;
-  color: #666;
+  color: rgba(26,15,5,0.62);
   font-style: italic;
+}
+
+.rule-coin-button {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 20;
+  width: 66px;
+  height: 66px;
+  border-radius: 50%;
+  border: 2px solid #8a5e0a;
+  background: radial-gradient(circle at 35% 28%, var(--gold-light), var(--gold) 58%, #875908);
+  color: var(--ink);
+  font-family: 'Noto Serif KR', serif;
+  font-weight: 900;
+  font-size: 1.3rem;
+  cursor: pointer;
+  box-shadow: 0 7px 0 #5a3500, 0 16px 28px rgba(0,0,0,0.48);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.rule-coin-button::after {
+  content: "규칙";
+  position: absolute;
+  left: 50%;
+  bottom: -24px;
+  transform: translateX(-50%);
+  color: var(--gold-pale);
+  font-size: 0.78rem;
+  text-shadow: 0 2px 5px #000;
+  white-space: nowrap;
+}
+
+.rule-coin-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 0 #5a3500, 0 20px 34px rgba(0,0,0,0.52);
+}
+
+.rules-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(5,3,1,0.78);
+  backdrop-filter: blur(5px);
+}
+
+.rules-modal.open {
+  display: flex;
+}
+
+.rules-panel {
+  width: min(960px, 100%);
+  max-height: min(760px, calc(100vh - 48px));
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr);
+  border: 3px double rgba(240,192,64,0.78);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(61,37,16,0.98), rgba(20,10,3,0.98));
+  box-shadow: 0 30px 80px rgba(0,0,0,0.78);
+  overflow: hidden;
+}
+
+.rules-menu {
+  padding: 22px;
+  border-right: 1px solid rgba(200,148,26,0.34);
+  background: rgba(13,10,6,0.58);
+}
+
+.rules-menu h2,
+.rules-content h2 {
+  color: var(--gold-pale);
+  font-size: 1.32rem;
+}
+
+.rules-menu p {
+  margin: 10px 0 18px;
+  color: rgba(245,230,200,0.72);
+  line-height: 1.55;
+  font-size: 0.92rem;
+}
+
+.rule-choice {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 10px;
+  border-radius: 4px;
+  border: 1px solid rgba(200,148,26,0.48);
+  background: rgba(44,26,10,0.88);
+  color: var(--gold-pale);
+  font-weight: 800;
+  cursor: pointer;
+  text-align: left;
+  padding: 0 13px;
+}
+
+.rule-choice:hover,
+.rule-choice.active {
+  background: rgba(200,148,26,0.22);
+  border-color: var(--gold-light);
+}
+
+.rules-content {
+  min-height: 420px;
+  max-height: min(760px, calc(100vh - 48px));
+  overflow: auto;
+  padding: 22px 26px 28px;
+  color: var(--cream);
+}
+
+.rules-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(200,148,26,0.36);
+}
+
+.rules-close {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid rgba(240,192,64,0.64);
+  background: rgba(20,10,3,0.72);
+  color: var(--gold-pale);
+  cursor: pointer;
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.rules-body {
+  color: rgba(245,230,200,0.9);
+  line-height: 1.72;
+}
+
+.rules-body h1,
+.rules-body h2,
+.rules-body h3 {
+  color: var(--gold-pale);
+  line-height: 1.3;
+}
+
+.rules-body h1 {
+  font-size: 1.58rem;
+  text-shadow: none;
+  margin: 0 0 18px;
+}
+
+.rules-body h2 {
+  font-size: 1.18rem;
+  margin: 24px 0 8px;
+}
+
+.rules-body h3 {
+  font-size: 1rem;
+  margin: 18px 0 8px;
+}
+
+.rules-body p {
+  margin: 9px 0;
+}
+
+.rules-body ul,
+.rules-body ol {
+  padding-left: 22px;
+}
+
+.rules-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0 18px;
+  overflow: hidden;
+  border: 1px solid rgba(200,148,26,0.34);
+}
+
+.rules-body th,
+.rules-body td {
+  padding: 9px 10px;
+  border-bottom: 1px solid rgba(200,148,26,0.2);
+  text-align: left;
+}
+
+.rules-body th {
+  color: var(--ink);
+  background: var(--parchment);
+  font-family: 'Noto Serif KR', serif;
+}
+
+.rules-body code {
+  padding: 2px 5px;
+  border-radius: 3px;
+  color: var(--gold-pale);
+  background: rgba(0,0,0,0.28);
+}
+
+.rules-body pre {
+  overflow: auto;
+  padding: 12px;
+  border-radius: 5px;
+  background: rgba(0,0,0,0.36);
+}
+
+.rules-empty {
+  min-height: 300px;
+  display: grid;
+  place-items: center;
+  color: rgba(245,230,200,0.62);
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+    min-height: auto;
+    gap: 18px;
+  }
+
+  .table-stage {
+    min-height: 430px;
+  }
+
+  .game-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .rules-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .rules-menu {
+    border-right: 0;
+    border-bottom: 1px solid rgba(200,148,26,0.34);
+  }
+
+  .section-title {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .section-title p {
+    text-align: left;
+  }
+}
+
+@media (max-width: 560px) {
+  .page {
+    width: min(100% - 24px, 1120px);
+    padding-top: 20px;
+  }
+
+  h1 {
+    font-size: 3rem;
+  }
+
+  .hero-copy p {
+    font-size: 1rem;
+  }
+
+  .table-stage {
+    min-height: 350px;
+  }
+
+  .round-table {
+    width: min(88vw, 330px);
+  }
+
+  .brand-seal {
+    width: 98px;
+    height: 98px;
+    border-radius: 20px;
+  }
+
+  .card {
+    width: 54px;
+    height: 78px;
+    font-size: 0.84rem;
+    padding: 6px;
+  }
+
+  .card span:nth-child(2) { font-size: 1.18rem; }
+  .card.one { left: 38px; top: 82px; }
+  .card.two { right: 42px; top: 86px; }
+  .card.three { left: 56px; bottom: 72px; }
+  .card.four { right: 56px; bottom: 72px; }
+  .coin { width: 34px; height: 34px; }
+  .coin.a { left: 28px; bottom: 130px; }
+  .coin.b { right: 28px; bottom: 130px; }
+  .lantern { width: 62px; height: 88px; right: 2px; }
+
+  .rule-coin-button {
+    right: 14px;
+    bottom: 18px;
+    width: 58px;
+    height: 58px;
+    font-size: 1.12rem;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+  }
+
+  .button {
+    width: 100%;
+  }
+
+  .ledger-header {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .log-table th,
+  .log-table td {
+    padding: 10px 9px;
+    font-size: 0.82rem;
+  }
 }
 </style>
 </head>
 <body>
+  <main class="page">
+    <section class="hero" aria-labelledby="page-title">
+      <div class="hero-copy">
+        <div class="eyebrow">카드와 판돈이 오가는 밤</div>
+        <h1 id="page-title">조선 명가 오락 주막</h1>
+        <p>
+          촛불 아래 둥근 판이 열렸습니다. 인디언 포-카, 인디언 블랙잭, 조선 블랙잭 중
+          원하는 경합을 골라 패를 읽고, 배짱을 걸고, 마지막 장부에 이름을 남겨보세요.
+        </p>
+        <div class="hero-actions">
+          <a class="button primary" href="#games">경합 고르기</a>
+          <button class="button secondary" type="button" onclick="openRulesModal()">규칙패 열기</button>
+        </div>
+      </div>
 
-  <div class="header">
-    <h1>조선 명가 오락 주막</h1>
-    <p>세 가지의 격조 높은 경합을 한곳에서 즐겨보시게</p>
-  </div>
+      <div class="table-stage" aria-hidden="true">
+        <div class="lantern"></div>
+        <div class="round-table">
+          <img class="brand-seal" src="./icons/icon-192.png" alt="">
+          <div class="card one"><span>A</span><span>♠</span><span>A</span></div>
+          <div class="card two"><span>K</span><span>♥</span><span>K</span></div>
+          <div class="card three"><span>7</span><span>♦</span><span>7</span></div>
+          <div class="card four"><span>J</span><span>♣</span><span>J</span></div>
+          <div class="coin a"></div>
+          <div class="coin b"></div>
+        </div>
+      </div>
+    </section>
 
-  <div class="game-grid">
-    <a href="./indianpoker_js.html" class="game-card">
-      <h2>인디언 포-카</h2>
-      <p>상대의 패는 보이나 나의 패는 보이지 않는다. 오직 담력과 심리전으로 승부하는 전통 마작풍 경합.</p>
-      <span class="btn-play">입장하기</span>
-    </a>
-    
-    <a href="./indian_blackjack_js.html" class="game-card">
-      <h2>인디언 블랙잭</h2>
-      <p>인디언 포커의 규칙에 21점 블랙잭의 묘미를 결합하여 수 싸움을 한층 더 진화시킨 경합.</p>
-      <span class="btn-play">입장하기</span>
-    </a>
-    
-    <a href="./blackjack_js.html" class="game-card">
-      <h2>조선 블랙잭</h2>
-      <p>물주(딜러)와 겨루어 21점에 가장 가까운 자가 승리하는 가 장부 기반의 정통 타짜 경합.</p>
-      <span class="btn-play">입장하기</span>
-    </a>
-  </div>
+    <section id="games" aria-labelledby="games-title">
+      <div class="section-title">
+        <h2 id="games-title">오늘의 경합</h2>
+        <p>각 방은 기존 게임 페이지로 바로 이어집니다. 승부가 끝나면 통합 장부에 최근 기록이 남습니다.</p>
+      </div>
 
-  <div class="log-section">
-    <div class="log-header">
-      <h2>대통합 오락 장부 (최근 기록)</h2>
-      <button class="btn-clear" onclick="clearLogs()">장부 초기화</button>
-    </div>
-    <div class="log-table-container">
-      <table class="log-table" id="logTable">
-        <thead>
-          <tr>
-            <th style="width: 25%;">경합 종류</th>
-            <th style="width: 20%;">일시</th>
-            <th style="width: 15%;">결과</th>
-            <th style="width: 40%;">상세 정보</th>
-          </tr>
-        </thead>
-        <tbody id="logBody">
-          </tbody>
-      </table>
+      <div class="game-grid">
+        <a href="./indianpoker_js.html" class="game-card">
+          <div>
+            <h3>인디언 포-카</h3>
+            <p>상대의 패는 보이지만 내 패는 보이지 않습니다. 표정, 베팅, 기권 타이밍으로 승부를 가르는 심리전입니다.</p>
+          </div>
+          <div>
+            <div class="game-meta">
+              <span class="tag">심리전</span>
+              <span class="tag">다인전</span>
+              <span class="tag">베팅</span>
+            </div>
+            <span class="enter">입장하기</span>
+          </div>
+        </a>
+
+        <a href="./indian_blackjack_js.html" class="game-card">
+          <div>
+            <h3>인디언 블랙잭</h3>
+            <p>인디언 카드와 21점 블랙잭의 긴장감을 섞었습니다. 선언의 진실과 거짓까지 읽어야 살아남습니다.</p>
+          </div>
+          <div>
+            <div class="game-meta">
+              <span class="tag">21점</span>
+              <span class="tag">야바위</span>
+              <span class="tag">판돈</span>
+            </div>
+            <span class="enter">입장하기</span>
+          </div>
+        </a>
+
+        <a href="./blackjack_js.html" class="game-card">
+          <div>
+            <h3>조선 블랙잭</h3>
+            <p>물주와 꾼이 21점에 가장 가까운 패를 겨룹니다. 기본 규칙은 간단하지만 한 장 더 받을지는 신중해야 합니다.</p>
+          </div>
+          <div>
+            <div class="game-meta">
+              <span class="tag">클래식</span>
+              <span class="tag">딜러전</span>
+              <span class="tag">빠른 승부</span>
+            </div>
+            <span class="enter">입장하기</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <section class="ledger" aria-labelledby="ledger-title">
+      <div class="ledger-header">
+        <h2 id="ledger-title">통합 오락 장부</h2>
+        <button class="clear-button" type="button" onclick="clearLogs()">장부 비우기</button>
+      </div>
+      <div class="log-table-wrap">
+        <table class="log-table">
+          <thead>
+            <tr>
+              <th>경합</th>
+              <th>일시</th>
+              <th>결과</th>
+              <th>상세</th>
+            </tr>
+          </thead>
+          <tbody id="logBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <button class="rule-coin-button" type="button" onclick="openRulesModal()" aria-label="규칙 선택 창 열기">文</button>
+
+  <div class="rules-modal" id="rulesModal" role="dialog" aria-modal="true" aria-labelledby="rulesModalTitle">
+    <div class="rules-panel">
+      <aside class="rules-menu">
+        <h2 id="rulesModalTitle">규칙패</h2>
+        <p>게임을 고르면 `add-rules-md`의 규칙 문서가 이곳에 펼쳐집니다.</p>
+        <button class="rule-choice" type="button" data-rule="indian-poker">인디언 포-카</button>
+        <button class="rule-choice" type="button" data-rule="blackjack">조선 블랙잭</button>
+        <button class="rule-choice" type="button" data-rule="indian-blackjack">인디언 블랙잭</button>
+      </aside>
+      <section class="rules-content">
+        <div class="rules-topbar">
+          <h2 id="rulesContentTitle">게임을 선택하세요</h2>
+          <button class="rules-close" type="button" onclick="closeRulesModal()" aria-label="규칙 창 닫기">×</button>
+        </div>
+        <div class="rules-body" id="rulesBody">
+          <div class="rules-empty">왼쪽에서 규칙을 볼 게임을 선택하세요.</div>
+        </div>
+      </section>
     </div>
   </div>
 
 <script>
+const RULE_FILES = {
+  'indian-poker': {
+    title: '인디언 포-카 규칙',
+    path: './rules/indian-poker.md'
+  },
+  blackjack: {
+    title: '조선 블랙잭 규칙',
+    path: './rules/blackjack.md'
+  },
+  'indian-blackjack': {
+    title: '인디언 블랙잭 규칙',
+    path: './rules/indian-blackjack.md'
+  }
+};
+
+function escapeHTML(value) {
+  return String(value ?? '').replace(/[&<>"']/g, function(ch) {
+    return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch];
+  });
+}
+
+function renderInlineMarkdown(text) {
+  return escapeHTML(text)
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+}
+
+function renderMarkdown(markdown) {
+  const lines = markdown.replace(/\r\n/g, '\n').split('\n');
+  const html = [];
+  let i = 0;
+  let inCode = false;
+  let codeLines = [];
+
+  while (i < lines.length) {
+    const line = lines[i];
+    const trimmed = line.trim();
+
+    if (trimmed.startsWith('```')) {
+      if (inCode) {
+        html.push(`<pre><code>${escapeHTML(codeLines.join('\n'))}</code></pre>`);
+        codeLines = [];
+        inCode = false;
+      } else {
+        inCode = true;
+      }
+      i++;
+      continue;
+    }
+
+    if (inCode) {
+      codeLines.push(line);
+      i++;
+      continue;
+    }
+
+    if (!trimmed) {
+      i++;
+      continue;
+    }
+
+    if (trimmed.includes('|') && lines[i + 1] && /^\s*\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?\s*$/.test(lines[i + 1])) {
+      const headers = trimmed.split('|').map(cell => cell.trim()).filter(Boolean);
+      i += 2;
+      const rows = [];
+      while (i < lines.length && lines[i].trim().includes('|')) {
+        rows.push(lines[i].trim().split('|').map(cell => cell.trim()).filter(Boolean));
+        i++;
+      }
+      html.push('<table><thead><tr>' + headers.map(cell => `<th>${renderInlineMarkdown(cell)}</th>`).join('') + '</tr></thead><tbody>' +
+        rows.map(row => '<tr>' + row.map(cell => `<td>${renderInlineMarkdown(cell)}</td>`).join('') + '</tr>').join('') +
+        '</tbody></table>');
+      continue;
+    }
+
+    if (trimmed.startsWith('# ')) {
+      html.push(`<h1>${renderInlineMarkdown(trimmed.slice(2))}</h1>`);
+    } else if (trimmed.startsWith('## ')) {
+      html.push(`<h2>${renderInlineMarkdown(trimmed.slice(3))}</h2>`);
+    } else if (trimmed.startsWith('### ')) {
+      html.push(`<h3>${renderInlineMarkdown(trimmed.slice(4))}</h3>`);
+    } else if (/^- /.test(trimmed)) {
+      const items = [];
+      while (i < lines.length && /^- /.test(lines[i].trim())) {
+        items.push(lines[i].trim().slice(2));
+        i++;
+      }
+      html.push('<ul>' + items.map(item => `<li>${renderInlineMarkdown(item)}</li>`).join('') + '</ul>');
+      continue;
+    } else if (/^\d+\. /.test(trimmed)) {
+      const items = [];
+      while (i < lines.length && /^\d+\. /.test(lines[i].trim())) {
+        items.push(lines[i].trim().replace(/^\d+\. /, ''));
+        i++;
+      }
+      html.push('<ol>' + items.map(item => `<li>${renderInlineMarkdown(item)}</li>`).join('') + '</ol>');
+      continue;
+    } else {
+      html.push(`<p>${renderInlineMarkdown(trimmed)}</p>`);
+    }
+
+    i++;
+  }
+
+  if (inCode) {
+    html.push(`<pre><code>${escapeHTML(codeLines.join('\n'))}</code></pre>`);
+  }
+
+  return html.join('');
+}
+
+function setActiveRule(key) {
+  document.querySelectorAll('.rule-choice').forEach(function(button) {
+    button.classList.toggle('active', button.dataset.rule === key);
+  });
+}
+
+async function showRule(key) {
+  const rule = RULE_FILES[key];
+  if (!rule) return;
+
+  setActiveRule(key);
+  document.getElementById('rulesContentTitle').textContent = rule.title;
+  document.getElementById('rulesBody').innerHTML = '<div class="rules-empty">규칙패를 펼치는 중입니다.</div>';
+
+  try {
+    const response = await fetch(rule.path);
+    if (!response.ok) throw new Error('rule file not found');
+    const markdown = await response.text();
+    document.getElementById('rulesBody').innerHTML = renderMarkdown(markdown);
+  } catch (error) {
+    document.getElementById('rulesBody').innerHTML =
+      `<div class="rules-empty">규칙 파일을 불러오지 못했습니다.<br><code>${escapeHTML(rule.path)}</code> 파일을 확인해주세요.</div>`;
+  }
+}
+
+function openRulesModal() {
+  const modal = document.getElementById('rulesModal');
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeRulesModal() {
+  document.getElementById('rulesModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function getBadgeClass(result) {
+  const text = String(result || '').toLowerCase();
+  if (text.includes('승') || text.includes('win')) return 'win';
+  if (text.includes('패') || text.includes('lose')) return 'lose';
+  return 'draw';
+}
+
 function loadLogs() {
   const logBody = document.getElementById('logBody');
   const logs = JSON.parse(localStorage.getItem('joseon_arcade_unified_logs') || '[]');
-  
-  if (logs.length === 0) {
-    logBody.innerHTML = `<tr><td colspan="4" class="no-log">아직 기록된 경합 내역이 없네. 게임을 시작해보시게!</td></tr>`;
+
+  if (!Array.isArray(logs) || logs.length === 0) {
+    logBody.innerHTML = '<tr><td colspan="4" class="no-log">아직 장부에 적힌 경합이 없습니다. 원하는 방에 들어가 첫 판을 시작해보세요.</td></tr>';
     return;
   }
-  
-  logBody.innerHTML = logs.map(l => {
-    let badgeClass = 'draw';
-    if(l.result.includes('승') || l.result.includes('Win')) badgeClass = 'win';
-    if(l.result.includes('패') || l.result.includes('Lose')) badgeClass = 'lose';
-    
+
+  logBody.innerHTML = logs.map(function(log) {
+    const badgeClass = getBadgeClass(log.result);
     return `<tr>
-      <td style="font-weight:bold;">${l.game}</td>
-      <td style="font-size:0.85rem; color:#555;">${l.time}</td>
-      <td><span class="badge ${badgeClass}">${l.result}</span></td>
-      <td style="font-size:0.9rem;">${l.detail}</td>
+      <td><strong>${escapeHTML(log.game)}</strong></td>
+      <td>${escapeHTML(log.time)}</td>
+      <td><span class="badge ${badgeClass}">${escapeHTML(log.result)}</span></td>
+      <td>${escapeHTML(log.detail)}</td>
     </tr>`;
   }).join('');
 }
 
 function clearLogs() {
-  if (confirm('정말로 주막의 모든 전적 장부를 불태우시겠습니까?')) {
+  if (confirm('통합 오락 장부의 모든 기록을 지울까요?')) {
     localStorage.removeItem('joseon_arcade_unified_logs');
     loadLogs();
   }
 }
 
-// 페이지가 켜질 때 장부 자동 로드
-window.onload = loadLogs;
+document.querySelectorAll('.rule-choice').forEach(function(button) {
+  button.addEventListener('click', function() {
+    showRule(button.dataset.rule);
+  });
+});
+
+document.getElementById('rulesModal').addEventListener('click', function(event) {
+  if (event.target === event.currentTarget) closeRulesModal();
+});
+
+window.addEventListener('keydown', function(event) {
+  if (event.key === 'Escape') closeRulesModal();
+});
+
+window.addEventListener('load', loadLogs);
 </script>
 </body>
 </html>
